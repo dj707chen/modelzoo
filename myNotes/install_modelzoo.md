@@ -34,12 +34,18 @@ uv venv --python 3.11
 uv pip install --upgrade pip
 source .venv/bin/activate
 
-pip install --editable ./modelzoo
+uv pip install --editable ./modelzoo
 ```
 
 ## Verify installation
 
 ```shell
+# The command was created by the cerebras_pytorch package (version 2.10.0),
+# which is a dependency that got installed when you ran
+#     uv pip install --editable ./modelzoo
+# on line 37.
+# Source is here: https://github.com/dj707chen/cerebras-pytorch-src/blob/e7b7e2b497c689a36fb242b972cc8c5113918acb/cerebras_pytorch-2.10.0/cerebras_pytorch-2.10.0.data/scripts/cerebras_install_check
+# uv then placed it in .venv/bin to make it visible.
 cerebras_install_check \
     --mgmt_namespace default \
     --mgmt_address localhost:9000

@@ -24,6 +24,8 @@ ls -l
 # For command cszoo,              refer to https://github.com/dj707chen/modelzoo/blob/aa77afee2baca72b97efe113fbbe44e11a9e460a/myNotes/install_modelzoo.md
 # For subcommand data_preprocess, refer to https://github.com/dj707chen/modelzoo/blob/ccbe5f766b5ae02a645b619dd7f01efe0cdd8626/src/cerebras/modelzoo/cli/main.py#L177
 cszoo --help
+
+# data_preprocess command defined here:    https://github.com/dj707chen/modelzoo/blob/ccbe5f766b5ae02a645b619dd7f01efe0cdd8626/src/cerebras/modelzoo/cli/main.py#L178
 cszoo data_preprocess run --config train_data_config.yaml
 cszoo data_preprocess run --config valid_data_config.yaml
 ```

@@ -54,17 +54,16 @@ EPILOG_WITHOUT_ASSISTANT = (
     f"  $ {MZ_CLI_NAME} lm_eval workdir/params_gpt_tiny.yaml --tasks=winogrande --checkpoint_path=workdir/my_ckpt.mdl\n\n"
     f"Run BigCode Eval Harness:\n"
     f"  $ {MZ_CLI_NAME} bigcode_eval workdir/params_gpt_tiny.yaml --tasks=mbpp --checkpoint_path=workdir/my_ckpt.mdl\n\n"
-    f"Convert a checkpoint to Huggingface format\n"
-    f"  $ {MZ_CLI_NAME} checkpoint convert --model gpt2 --src-fmt "
-    f"cs-auto --tgt-fmt hf --config workdir/params_gpt_tiny.yaml "
-    f"model_dir/checkpoint.mdl\n\n"
+    f"Convert a checkpoint to Huggingface format:\n"
+    f"  $ {MZ_CLI_NAME} checkpoint convert --model gpt2 --src-fmt \\\n"
+    f"        cs-auto --tgt-fmt hf --config workdir/params_gpt_tiny.yaml \\\n"
+    f"        model_dir/checkpoint.mdl\n\n"
 )
 
 EPILOG = (
     f"{EPILOG_WITHOUT_ASSISTANT}"
     f"Ask {MZ_CLI_NAME} LLM assistant a query in natural language:\n"
-    f"  $ {MZ_CLI_NAME} assistant \"Is llama 3.1 supported in the "
-    f"checkpoint converter?\""
+    f"  $ {MZ_CLI_NAME} assistant \"Is llama 3.1 supported in the checkpoint converter?\""
 )
 
 
