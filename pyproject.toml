@@ -1,0 +1,80 @@
+[build-system]
+requires = ["setuptools>=64", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "cerebras_modelzoo"
+version = "2.10.0"
+description = "Cerebras Modelzoo"
+requires-python = "==3.11.*"
+readme = "PYPI-README.md"
+license = {text = "Apache-2.0"}
+authors = [
+  {name = "Cerebras Systems", email = "support@cerebras.net"},
+]
+urls = {Homepage = "https://github.com/Cerebras/modelzoo"}
+classifiers = [
+  "Development Status :: 5 - Production/Stable",
+  "Intended Audience :: Developers",
+  "Intended Audience :: Science/Research",
+  "Topic :: Scientific/Engineering :: Artificial Intelligence",
+  "Topic :: Software Development",
+  "Topic :: Software Development :: Libraries",
+  "License :: OSI Approved :: Apache License",
+  "Programming Language :: Python :: 3",
+]
+dependencies = [
+  "cerebras_pytorch==2.10.0",
+  "argcomplete==3.6.3",
+  "tabulate==0.9.0",
+  "transformers==4.57.1",
+  "tokenizers==0.22.1",
+  "datasets==3.6.0",
+  "filelock==3.20.0",
+  "more-itertools==10.5.0",
+  "datasketch==1.6.5",
+  "ftfy==6.2.3",
+  "networkit==11.0",
+  "Keras-Preprocessing==1.1.2",
+  "scipy==1.15.3",
+  "regex>=2021.8.3",
+  "nltk==3.9.1",
+  "spacy==3.7.6",
+  "matplotlib==3.9.2",
+  "pyarrow==17.0.0",
+  "pydantic==2.8.2",
+  "PyYAML",
+  "pandas==2.2.3",
+  "jsonschema==4.23.0",
+  "torch==2.4.0",
+  "torchvision==0.19.0",
+  "safetensors==0.4.5",
+  "sentencepiece==0.2.1",
+  "lm-dataformat @ https://github.com/leogao2/lm_dataformat/archive/ac85cb7dae49ce25e9973a128ebd9167deaf64dd.zip",
+  "lm-eval @ https://github.com/EleutherAI/lm-evaluation-harness/archive/refs/tags/v0.4.9.1.zip",
+  "bigcode_eval @ https://github.com/bigcode-project/bigcode-evaluation-harness/archive/f0b81a9d079289881bd42f509811d42fe73e58cf.zip",
+  "h5py==3.13.0",
+  "tqdm==4.66.5",
+  "Flask==3.0.3",
+  "Pillow==10.4.0",
+  "faiss-cpu==1.8.0.post1",
+  "deepdiff>=8.6.1,<9",
+  "cerebras_cloud_sdk>=1.0.0",
+  "click==8.3.0",
+  "termcolor==3.2.0",
+  "slack-sdk==3.33.1",
+]
+
+[project.scripts]
+cszoo = "cerebras.modelzoo.cli.main:main"
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+
+[tool.setuptools.packages.find]
+where = ["src"]
+include = ["cerebras*"]
+namespaces = true
+
+[tool.setuptools.package-data]
+"cerebras.modelzoo" = ["**/*.yaml"]
