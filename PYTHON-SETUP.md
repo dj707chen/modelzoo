@@ -4,17 +4,17 @@ The get more info about software setup and dependencies, please visit our develo
 
 ## Cerebras Wafer-Scale Cluster instructions
 
-After installing all the Cerebras packages distributed in the CSoft platform, to support all the functionalities in Model Zoo, please install other external packages to your python environment.
+After installing all the Cerebras packages distributed in the CSoft platform, use `uv` to install the remaining Python dependencies for Model Zoo.
 
-For PyTorch environment, please install the packages by running:
+For a PyTorch CPU environment, install the packages by running:
 
 ```bash
-pip install -r requirements.txt --extra-index-url https://download.pytorch.org/whl/cpu
+uv sync --extra-index-url https://download.pytorch.org/whl/cpu
 ```
 
 **NOTE:** The rest of this guide concerns to *GPU Python environment only*.
 
-Along with the Cerebras Wafer-Scale Cluster, the Model Zoo allows for models to be run on GPUs as well. To run the model code on a GPU, certain packages need to be installed. This is usually best done in a virtual environment using ``virtualenv`` or `conda`. We provide instructions for setting up a ``virtualenv`` in this setup instructions.
+Along with the Cerebras Wafer-Scale Cluster, the Model Zoo allows for models to be run on GPUs as well. To run the model code on a GPU, certain packages need to be installed. This is usually best done in a virtual environment using `uv` or `conda`. We provide instructions for setting up a `uv` environment in this setup instructions.
 
 Follow along below for setting up a GPU environment setup.
 
@@ -28,20 +28,19 @@ To run on a GPU, the CUDA libraries must be installed on the system. This includ
 
 Currently, the Model Zoo only supports PyTorch version `2.0.1` which requires CUDA version `11.7/11.8`.
 
-Once all the CUDA requirements are installed, create a `virtualenv` on your system, with Python version `3.11` or newer, activate the `virtualenv` and install the packages needed for running PyTorch models using the below steps:
+Once all the CUDA requirements are installed, create a uv-managed virtual environment on your system with Python version `3.11`, activate it, and install the packages needed for running PyTorch models using the below steps:
 
 ```bash
-    virtualenv -p python3.11 /path/to/venv_gpu
-    source /path/to/venv_pt/bin/activate
-    pip install --upgrade pip
-    pip install -r requirements.txt
+    uv venv --python 3.11 /path/to/venv_gpu
+    source /path/to/venv_gpu/bin/activate
+    uv sync
 ```
 
 To test if PyTorch is able to properly access the GPU, start a Python session through the virtual environment create above and run the following commands:
 
 ```bash
-    $ source /path/to/venv_pt/bin/activate
-    $ python
+    $ source /path/to/venv_gpu/bin/activate
+    $ uv run python
     >>> import torch
     >>> torch.__version__
     '2.0.1+cu117-with-pypi-cudnn' # Confirm that the PT version is `2.0.1`
