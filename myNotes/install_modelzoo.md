@@ -44,8 +44,9 @@ so its wheel data scripts are never extracted into `.venv/bin/`. Copy the script
 
 ```shell
 if [[ "$(uname)" == "Darwin" ]]; then
-    cp cerebras-pytorch-src/cerebras_pytorch-2.10.0/cerebras_pytorch-2.10.0.data/scripts/cerebras_install_check \
+    cp -a cerebras-pytorch-src/cerebras_pytorch-2.10.0/cerebras_pytorch-2.10.0.data/scripts/cerebras_install_check \
         .venv/bin/
+    sed -i '' "1s|#!python|#!$(pwd)/.venv/bin/python|" .venv/bin/cerebras_install_check
     chmod +x .venv/bin/cerebras_install_check
 fi
 ```
