@@ -18,6 +18,7 @@ import argparse
 import collections
 import logging
 import os
+import pprint
 import sys
 from typing import Callable, List, Optional, Set, Union
 
@@ -31,6 +32,8 @@ def read_params_file(params_file: str) -> dict:
     """Helper for loading params file."""
     with open(params_file, 'r') as stream:
         params = yaml.load(stream, Loader=UniqueKeyLoader)
+    print(f"Contents of file {params_file}")
+    pprint.pprint(params)
     return params
 
 
