@@ -39,19 +39,6 @@ usage: cszoo fit [-h] [--target_device {CSX,CPU,GPU}] [-o MODEL_DIR]
                  [--num_csx NUM_CSX] [--debug_args [DEBUG_ARGS ...]]
                  [--debug_args_path DEBUG_ARGS_PATH] [--ini [INI ...]]
                  params
-usage: cszoo fit [-h] [--target_device {CSX,CPU,GPU}] [-o MODEL_DIR]
-                 [--checkpoint_path CHECKPOINT_PATH]
-                 [--load_checkpoint_states LOAD_CHECKPOINT_STATES]
-                 [--logging LOGGING] [--compile_only] [--validate_only]
-                 [--job_labels JOB_LABELS [JOB_LABELS ...]]
-                 [--job_priority {p1,p2,p3}]
-                 [--mount_dirs MOUNT_DIRS [MOUNT_DIRS ...]]
-                 [--python_paths PYTHON_PATHS [PYTHON_PATHS ...]]
-                 [--credentials_path CREDENTIALS_PATH]
-                 [--mgmt_address MGMT_ADDRESS] [--disable_version_check]
-                 [--num_csx NUM_CSX] [--debug_args [DEBUG_ARGS ...]]
-                 [--debug_args_path DEBUG_ARGS_PATH] [--ini [INI ...]]
-                 params
 
 positional arguments:
   params                Path to .yaml file with model parameters.
@@ -65,7 +52,14 @@ options:
   --checkpoint_path CHECKPOINT_PATH
                         Checkpoint to initialize weights from.
   --load_checkpoint_states LOAD_CHECKPOINT_STATES
-                        Comma-separated string of keys to explicitly specify the components whose state should be loaded if present in a checkpoint. If this flag is used, then all component states that exist in a checkpoint, but are not specified to load via the flag will be ignored. For example, for fine-tuning runs on a different dataset, setting `--load_checkpoint_states="model" will only load the model state; any `optimizer` or `dataloader` state present in the checkpoint will not be loaded. By default, the config is `all`, i.e. everything present in the checkpoint is loaded.
+                        Comma-separated string of keys to explicitly specify the components
+                            whose state should be loaded if present in a checkpoint. If this flag is
+                            used, then all component states that exist in a checkpoint, but are not
+                            specified to load via the flag will be ignored. For example, for fine-tuning
+                            runs on a different dataset, setting `--load_checkpoint_states=\model\ will only
+                            load the model state; any `optimizer` or `dataloader` state present in the
+                            checkpoint will not be loaded. By default, the config is `all`, i.e.
+                            everything present in the checkpoint is loaded.
   --logging LOGGING     Specifies the default logging level. Defaults to INFO.
   --compile_only        Enables compile only workflow.
   --validate_only       Enables validate only workflowvalidate_only stops the compilation at ws_km stage for weight streaming mode.
@@ -118,7 +112,14 @@ options:
   --checkpoint_path CHECKPOINT_PATH
                         Checkpoint to initialize weights from.
   --load_checkpoint_states LOAD_CHECKPOINT_STATES
-                        Comma-separated string of keys to explicitly specify the components whose state should be loaded if present in a checkpoint. If this flag is used, then all component states that exist in a checkpoint, but are not specified to load via the flag will be ignored. For example, for fine-tuning runs on a different dataset, setting `--load_checkpoint_states="model" will only load the model state; any `optimizer` or `dataloader` state present in the checkpoint will not be loaded. By default, the config is `all`, i.e. everything present in the checkpoint is loaded.
+                        Comma-separated string of keys to explicitly specify the components
+                            whose state should be loaded if present in a checkpoint. If this flag is
+                            used, then all component states that exist in a checkpoint, but are not
+                            specified to load via the flag will be ignored. For example, for fine-tuning
+                            runs on a different dataset, setting `--load_checkpoint_states=\model\ will only
+                            load the model state; any `optimizer` or `dataloader` state present in the
+                            checkpoint will not be loaded. By default, the config is `all`, i.e.
+                            everything present in the checkpoint is loaded.
   --logging LOGGING     Specifies the default logging level. Defaults to INFO.
   --compile_only        Enables compile only workflow.
   --validate_only       Enables validate only workflowvalidate_only stops the compilation at ws_km stage for weight streaming mode.
@@ -174,7 +175,14 @@ options:
   --checkpoint_path CHECKPOINT_PATH
                         Checkpoint to initialize weights from.
   --load_checkpoint_states LOAD_CHECKPOINT_STATES
-                        Comma-separated string of keys to explicitly specify the components whose state should be loaded if present in a checkpoint. If this flag is used, then all component states that exist in a checkpoint, but are not specified to load via the flag will be ignored. For example, for fine-tuning runs on a different dataset, setting `--load_checkpoint_states="model" will only load the model state; any `optimizer` or `dataloader` state present in the checkpoint will not be loaded. By default, the config is `all`, i.e. everything present in the checkpoint is loaded.
+                        Comma-separated string of keys to explicitly specify the components
+                            whose state should be loaded if present in a checkpoint. If this flag is
+                            used, then all component states that exist in a checkpoint, but are not
+                            specified to load via the flag will be ignored. For example, for fine-tuning
+                            runs on a different dataset, setting `--load_checkpoint_states=\model\ will only
+                            load the model state; any `optimizer` or `dataloader` state present in the
+                            checkpoint will not be loaded. By default, the config is `all`, i.e.
+                            everything present in the checkpoint is loaded.
   --logging LOGGING     Specifies the default logging level. Defaults to INFO.
   --compile_only        Enables compile only workflow.
   --validate_only       Enables validate only workflowvalidate_only stops the compilation at ws_km stage for weight streaming mode.
@@ -244,7 +252,14 @@ options:
   --checkpoint_path CHECKPOINT_PATH
                         Checkpoint to initialize weights from.
   --load_checkpoint_states LOAD_CHECKPOINT_STATES
-                        Comma-separated string of keys to explicitly specify the components whose state should be loaded if present in a checkpoint. If this flag is used, then all component states that exist in a checkpoint, but are not specified to load via the flag will be ignored. For example, for fine-tuning runs on a different dataset, setting `--load_checkpoint_states="model" will only load the model state; any `optimizer` or `dataloader` state present in the checkpoint will not be loaded. By default, the config is `all`, i.e. everything present in the checkpoint is loaded.
+                        Comma-separated string of keys to explicitly specify the components
+                            whose state should be loaded if present in a checkpoint. If this flag is
+                            used, then all component states that exist in a checkpoint, but are not
+                            specified to load via the flag will be ignored. For example, for fine-tuning
+                            runs on a different dataset, setting `--load_checkpoint_states=\model\ will only
+                            load the model state; any `optimizer` or `dataloader` state present in the
+                            checkpoint will not be loaded. By default, the config is `all`, i.e.
+                            everything present in the checkpoint is loaded.
   --logging LOGGING     Specifies the default logging level. Defaults to INFO.
   --compile_only        Enables compile only workflow.
   --validate_only       Enables validate only workflowvalidate_only stops the compilation at ws_km stage for weight streaming mode.
@@ -347,7 +362,14 @@ options:
   --checkpoint_path CHECKPOINT_PATH
                         Checkpoint to initialize weights from.
   --load_checkpoint_states LOAD_CHECKPOINT_STATES
-                        Comma-separated string of keys to explicitly specify the components whose state should be loaded if present in a checkpoint. If this flag is used, then all component states that exist in a checkpoint, but are not specified to load via the flag will be ignored. For example, for fine-tuning runs on a different dataset, setting `--load_checkpoint_states="model" will only load the model state; any `optimizer` or `dataloader` state present in the checkpoint will not be loaded. By default, the config is `all`, i.e. everything present in the checkpoint is loaded.
+                        Comma-separated string of keys to explicitly specify the components
+                            whose state should be loaded if present in a checkpoint. If this flag is
+                            used, then all component states that exist in a checkpoint, but are not
+                            specified to load via the flag will be ignored. For example, for fine-tuning
+                            runs on a different dataset, setting `--load_checkpoint_states=\model\ will only
+                            load the model state; any `optimizer` or `dataloader` state present in the
+                            checkpoint will not be loaded. By default, the config is `all`, i.e.
+                            everything present in the checkpoint is loaded.
   --logging LOGGING     Specifies the default logging level. Defaults to INFO.
   --compile_only        Enables compile only workflow.
   --validate_only       Enables validate only workflowvalidate_only stops the compilation at ws_km stage for weight streaming mode.
