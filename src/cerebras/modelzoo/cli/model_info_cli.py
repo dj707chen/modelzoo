@@ -81,7 +81,7 @@ class ModelInfoCLI:
             "describe",
             parents=[parent_parser],
             add_help=False,
-            help="Provides detailed infomation about a given model.",
+            help="Provides detailed information about a given model.",
         )
         describe_parser.add_argument(
             "model",
