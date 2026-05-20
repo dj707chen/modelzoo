@@ -1,0 +1,36 @@
+  -o MODEL_DIR, --model_dir MODEL_DIR
+                        Model directory where checkpoints will be written.
+  --checkpoint_path CHECKPOINT_PATH
+                        Checkpoint to initialize weights from.
+  --load_checkpoint_states LOAD_CHECKPOINT_STATES
+                        Comma-separated string of keys to explicitly specify the components
+                            whose state should be loaded if present in a checkpoint. If this flag is
+                            used, then all component states that exist in a checkpoint, but are not
+                            specified to load via the flag will be ignored. For example, for fine-tuning
+                            runs on a different dataset, setting `--load_checkpoint_states=\model\ will only
+                            load the model state; any `optimizer` or `dataloader` state present in the
+                            checkpoint will not be loaded. By default, the config is `all`, i.e.
+                            everything present in the checkpoint is loaded.
+  --logging LOGGING     Specifies the default logging level. Defaults to INFO.
+  --compile_only        Enables compile only workflow.
+  --validate_only       Enables validate only workflowvalidate_only stops the compilation at ws_km stage for weight streaming mode.
+  --job_labels JOB_LABELS [JOB_LABELS ...]
+                        A list of equal-sign-separated key value pairs served as job labels.
+  --job_priority {p1,p2,p3}
+                        Priority of the job. When launching jobs, valid priority should be between p1 and p3, where p1 is highest priority.
+  --mount_dirs MOUNT_DIRS [MOUNT_DIRS ...]
+                        A list of paths to be mounted to the appliance containers. It should generally contain path to the directory containing the Cerebras modelzoo.
+  --python_paths PYTHON_PATHS [PYTHON_PATHS ...]
+                        A list of paths to be exported into PYTHONPATH for worker containers. It should generally contain path to the directory containing the Cerebras modelzoo, as well as any external python packages needed.
+  --credentials_path CREDENTIALS_PATH
+                        Credentials for cluster access. Defaults to None. If None, the value from a pre-configured location will be used if available.
+  --mgmt_address MGMT_ADDRESS
+                        <host>:<port> for cluster management. If None, the value from a pre-configured location will be used if available. Defaults to None.
+  --disable_version_check
+                        Disable version check for local experimentation and debugging
+  --num_csx NUM_CSX     Number of CS nodes. Defaults to 1
+  --debug_args [DEBUG_ARGS ...]
+                        DebugArgs to pass to the Cerebras compile and execution, pass as --debug_args sub.object.key=value, where value can be bool int, float or str
+  --debug_args_path DEBUG_ARGS_PATH
+                        Path to debugs args file. Defaults to None.
+  --ini [INI ...]       Debug INI settings to pass to the Cerebras compile and execution, pass as --ini key=value, where value can be bool, int, float or str

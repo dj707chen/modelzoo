@@ -1,0 +1,523 @@
+
+----------------------------------------------------------------------------------------------------------------
+cszoo -h
+usage: cszoo [-h]
+             {fit,validate,validate_all,lm_eval,bigcode_eval,checkpoint,data_preprocess,model,data_processor,config,assistant}
+             ...
+
+Cerebras ModelZoo CLI. This serves as a single entry-point to all ModelZoo related tasks including: training and validation, checkpoint conversion, data preprocessing and config management.
+
+positional arguments:
+  {fit,validate,validate_all,lm_eval,bigcode_eval,checkpoint,data_preprocess,model,data_processor,config,assistant}
+    fit                 Run a model by calling fit. This completes a full training run on the given train and validation dataloaders.
+    validate            Run a model by calling validate. This completes a full validation run on the specified validation dataloader.
+    validate_all        Run a model by calling validate_all. This runs all upstream and downstream validation permutations.
+    lm_eval             Invokes script for running Eleuther Eval Harness.
+    bigcode_eval        Invokes script for running BigCode Eval Harness.
+    checkpoint          Get information on or perform some action on a checkpoint(s)
+    data_preprocess     Run data preprocessing.
+    model               Get information on available models.
+    data_processor      Get information on available data processors.
+    config              Manage model config files.
+    assistant           LLM assistant for cszoo
+
+options:
+  -h, --help            show this help message and exit
+
+----------------------------------------------------------------------------------------------------------------
+cszoo fit -h
+usage: cszoo fit [-h] [--target_device {CSX,CPU,GPU}] [-o MODEL_DIR]
+                 [--checkpoint_path CHECKPOINT_PATH]
+                 [--load_checkpoint_states LOAD_CHECKPOINT_STATES]
+                 [--logging LOGGING] [--compile_only] [--validate_only]
+                 [--job_labels JOB_LABELS [JOB_LABELS ...]]
+                 [--job_priority {p1,p2,p3}]
+                 [--mount_dirs MOUNT_DIRS [MOUNT_DIRS ...]]
+                 [--python_paths PYTHON_PATHS [PYTHON_PATHS ...]]
+                 [--credentials_path CREDENTIALS_PATH]
+                 [--mgmt_address MGMT_ADDRESS] [--disable_version_check]
+                 [--num_csx NUM_CSX] [--debug_args [DEBUG_ARGS ...]]
+                 [--debug_args_path DEBUG_ARGS_PATH] [--ini [INI ...]]
+                 params
+
+positional arguments:
+  params                Path to .yaml file with model parameters.
+
+options:
+  -h, --help            show this help message and exit
+  --target_device {CSX,CPU,GPU}
+                        Target device to run on. Can be one of CSX, CPU, GPU.
+  -o MODEL_DIR, --model_dir MODEL_DIR
+                        Model directory where checkpoints will be written.
+  --checkpoint_path CHECKPOINT_PATH
+                        Checkpoint to initialize weights from.
+  --load_checkpoint_states LOAD_CHECKPOINT_STATES
+                        Comma-separated string of keys to explicitly specify the components
+                            whose state should be loaded if present in a checkpoint. If this flag is
+                            used, then all component states that exist in a checkpoint, but are not
+                            specified to load via the flag will be ignored. For example, for fine-tuning
+                            runs on a different dataset, setting `--load_checkpoint_states=\model\ will only
+                            load the model state; any `optimizer` or `dataloader` state present in the
+                            checkpoint will not be loaded. By default, the config is `all`, i.e.
+                            everything present in the checkpoint is loaded.
+  --logging LOGGING     Specifies the default logging level. Defaults to INFO.
+  --compile_only        Enables compile only workflow.
+  --validate_only       Enables validate only workflowvalidate_only stops the compilation at ws_km stage for weight streaming mode.
+  --job_labels JOB_LABELS [JOB_LABELS ...]
+                        A list of equal-sign-separated key value pairs served as job labels.
+  --job_priority {p1,p2,p3}
+                        Priority of the job. When launching jobs, valid priority should be between p1 and p3, where p1 is highest priority.
+  --mount_dirs MOUNT_DIRS [MOUNT_DIRS ...]
+                        A list of paths to be mounted to the appliance containers. It should generally contain path to the directory containing the Cerebras modelzoo.
+  --python_paths PYTHON_PATHS [PYTHON_PATHS ...]
+                        A list of paths to be exported into PYTHONPATH for worker containers. It should generally contain path to the directory containing the Cerebras modelzoo, as well as any external python packages needed.
+  --credentials_path CREDENTIALS_PATH
+                        Credentials for cluster access. Defaults to None. If None, the value from a pre-configured location will be used if available.
+  --mgmt_address MGMT_ADDRESS
+                        <host>:<port> for cluster management. If None, the value from a pre-configured location will be used if available. Defaults to None.
+  --disable_version_check
+                        Disable version check for local experimentation and debugging
+  --num_csx NUM_CSX     Number of CS nodes. Defaults to 1
+  --debug_args [DEBUG_ARGS ...]
+                        DebugArgs to pass to the Cerebras compile and execution, pass as --debug_args sub.object.key=value, where value can be bool int, float or str
+  --debug_args_path DEBUG_ARGS_PATH
+                        Path to debugs args file. Defaults to None.
+  --ini [INI ...]       Debug INI settings to pass to the Cerebras compile and execution, pass as --ini key=value, where value can be bool, int, float or str
+
+----------------------------------------------------------------------------------------------------------------
+cszoo validate -h
+usage: cszoo validate [-h] [--target_device {CSX,CPU,GPU}] [-o MODEL_DIR]
+                      [--checkpoint_path CHECKPOINT_PATH]
+                      [--load_checkpoint_states LOAD_CHECKPOINT_STATES]
+                      [--logging LOGGING] [--compile_only] [--validate_only]
+                      [--job_labels JOB_LABELS [JOB_LABELS ...]]
+                      [--job_priority {p1,p2,p3}]
+                      [--mount_dirs MOUNT_DIRS [MOUNT_DIRS ...]]
+                      [--python_paths PYTHON_PATHS [PYTHON_PATHS ...]]
+                      [--credentials_path CREDENTIALS_PATH]
+                      [--mgmt_address MGMT_ADDRESS] [--disable_version_check]
+                      [--num_csx NUM_CSX] [--debug_args [DEBUG_ARGS ...]]
+                      [--debug_args_path DEBUG_ARGS_PATH] [--ini [INI ...]]
+                      params
+
+positional arguments:
+  params                Path to .yaml file with model parameters.
+
+options:
+  -h, --help            show this help message and exit
+  --target_device {CSX,CPU,GPU}
+                        Target device to run on. Can be one of CSX, CPU, GPU.
+  -o MODEL_DIR, --model_dir MODEL_DIR
+                        Model directory where checkpoints will be written.
+  --checkpoint_path CHECKPOINT_PATH
+                        Checkpoint to initialize weights from.
+  --load_checkpoint_states LOAD_CHECKPOINT_STATES
+                        Comma-separated string of keys to explicitly specify the components
+                            whose state should be loaded if present in a checkpoint. If this flag is
+                            used, then all component states that exist in a checkpoint, but are not
+                            specified to load via the flag will be ignored. For example, for fine-tuning
+                            runs on a different dataset, setting `--load_checkpoint_states=\model\ will only
+                            load the model state; any `optimizer` or `dataloader` state present in the
+                            checkpoint will not be loaded. By default, the config is `all`, i.e.
+                            everything present in the checkpoint is loaded.
+  --logging LOGGING     Specifies the default logging level. Defaults to INFO.
+  --compile_only        Enables compile only workflow.
+  --validate_only       Enables validate only workflowvalidate_only stops the compilation at ws_km stage for weight streaming mode.
+  --job_labels JOB_LABELS [JOB_LABELS ...]
+                        A list of equal-sign-separated key value pairs served as job labels.
+  --job_priority {p1,p2,p3}
+                        Priority of the job. When launching jobs, valid priority should be between p1 and p3, where p1 is highest priority.
+  --mount_dirs MOUNT_DIRS [MOUNT_DIRS ...]
+                        A list of paths to be mounted to the appliance containers. It should generally contain path to the directory containing the Cerebras modelzoo.
+  --python_paths PYTHON_PATHS [PYTHON_PATHS ...]
+                        A list of paths to be exported into PYTHONPATH for worker containers. It should generally contain path to the directory containing the Cerebras modelzoo, as well as any external python packages needed.
+  --credentials_path CREDENTIALS_PATH
+                        Credentials for cluster access. Defaults to None. If None, the value from a pre-configured location will be used if available.
+  --mgmt_address MGMT_ADDRESS
+                        <host>:<port> for cluster management. If None, the value from a pre-configured location will be used if available. Defaults to None.
+  --disable_version_check
+                        Disable version check for local experimentation and debugging
+  --num_csx NUM_CSX     Number of CS nodes. Defaults to 1
+  --debug_args [DEBUG_ARGS ...]
+                        DebugArgs to pass to the Cerebras compile and execution, pass as --debug_args sub.object.key=value, where value can be bool int, float or str
+  --debug_args_path DEBUG_ARGS_PATH
+                        Path to debugs args file. Defaults to None.
+  --ini [INI ...]       Debug INI settings to pass to the Cerebras compile and execution, pass as --ini key=value, where value can be bool, int, float or str
+
+----------------------------------------------------------------------------------------------------------------
+cszoo validate_all -h
+usage: cszoo validate_all [-h] [--target_device {CSX,CPU,GPU}] [-o MODEL_DIR]
+                          [--checkpoint_path CHECKPOINT_PATH]
+                          [--load_checkpoint_states LOAD_CHECKPOINT_STATES]
+                          [--logging LOGGING] [--compile_only]
+                          [--validate_only]
+                          [--job_labels JOB_LABELS [JOB_LABELS ...]]
+                          [--job_priority {p1,p2,p3}]
+                          [--mount_dirs MOUNT_DIRS [MOUNT_DIRS ...]]
+                          [--python_paths PYTHON_PATHS [PYTHON_PATHS ...]]
+                          [--credentials_path CREDENTIALS_PATH]
+                          [--mgmt_address MGMT_ADDRESS]
+                          [--disable_version_check] [--num_csx NUM_CSX]
+                          [--debug_args [DEBUG_ARGS ...]]
+                          [--debug_args_path DEBUG_ARGS_PATH]
+                          [--ini [INI ...]]
+                          params
+
+positional arguments:
+  params                Path to .yaml file with model parameters.
+
+options:
+  -h, --help            show this help message and exit
+  --target_device {CSX,CPU,GPU}
+                        Target device to run on. Can be one of CSX, CPU, GPU.
+  -o MODEL_DIR, --model_dir MODEL_DIR
+                        Model directory where checkpoints will be written.
+  --checkpoint_path CHECKPOINT_PATH
+                        Checkpoint to initialize weights from.
+  --load_checkpoint_states LOAD_CHECKPOINT_STATES
+                        Comma-separated string of keys to explicitly specify the components
+                            whose state should be loaded if present in a checkpoint. If this flag is
+                            used, then all component states that exist in a checkpoint, but are not
+                            specified to load via the flag will be ignored. For example, for fine-tuning
+                            runs on a different dataset, setting `--load_checkpoint_states=\model\ will only
+                            load the model state; any `optimizer` or `dataloader` state present in the
+                            checkpoint will not be loaded. By default, the config is `all`, i.e.
+                            everything present in the checkpoint is loaded.
+  --logging LOGGING     Specifies the default logging level. Defaults to INFO.
+  --compile_only        Enables compile only workflow.
+  --validate_only       Enables validate only workflowvalidate_only stops the compilation at ws_km stage for weight streaming mode.
+  --job_labels JOB_LABELS [JOB_LABELS ...]
+                        A list of equal-sign-separated key value pairs served as job labels.
+  --job_priority {p1,p2,p3}
+                        Priority of the job. When launching jobs, valid priority should be between p1 and p3, where p1 is highest priority.
+  --mount_dirs MOUNT_DIRS [MOUNT_DIRS ...]
+                        A list of paths to be mounted to the appliance containers. It should generally contain path to the directory containing the Cerebras modelzoo.
+  --python_paths PYTHON_PATHS [PYTHON_PATHS ...]
+                        A list of paths to be exported into PYTHONPATH for worker containers. It should generally contain path to the directory containing the Cerebras modelzoo, as well as any external python packages needed.
+  --credentials_path CREDENTIALS_PATH
+                        Credentials for cluster access. Defaults to None. If None, the value from a pre-configured location will be used if available.
+  --mgmt_address MGMT_ADDRESS
+                        <host>:<port> for cluster management. If None, the value from a pre-configured location will be used if available. Defaults to None.
+  --disable_version_check
+                        Disable version check for local experimentation and debugging
+  --num_csx NUM_CSX     Number of CS nodes. Defaults to 1
+  --debug_args [DEBUG_ARGS ...]
+                        DebugArgs to pass to the Cerebras compile and execution, pass as --debug_args sub.object.key=value, where value can be bool int, float or str
+  --debug_args_path DEBUG_ARGS_PATH
+                        Path to debugs args file. Defaults to None.
+  --ini [INI ...]       Debug INI settings to pass to the Cerebras compile and execution, pass as --ini key=value, where value can be bool, int, float or str
+
+----------------------------------------------------------------------------------------------------------------
+cszoo lm_eval -h
+usage: cszoo lm_eval [-h] [--tasks task1,task2] [--num_fewshot N]
+                     [--output_path DIR|DIR/file.json] [--limit N|0<N<1]
+                     [--use_cache DIR]
+                     [--cache_requests {true,refresh,delete}]
+                     [--check_integrity] [--write_out] [--log_samples]
+                     [--system_instruction SYSTEM_INSTRUCTION]
+                     [--apply_chat_template] [--fewshot_as_multiturn]
+                     [--show_config] [--include_path DIR] [--predict_only]
+                     [--seed SEED] [--trust_remote_code]
+                     [--max_tokens MAX_TOKENS] [--temperature TEMPERATURE]
+                     [--top_p TOP_P] [--top_k TOP_K] [--keep_data_dir]
+                     [--target_device {CSX}] [-o MODEL_DIR]
+                     [--checkpoint_path CHECKPOINT_PATH]
+                     [--load_checkpoint_states LOAD_CHECKPOINT_STATES]
+                     [--logging LOGGING] [--compile_only] [--validate_only]
+                     [--job_labels JOB_LABELS [JOB_LABELS ...]]
+                     [--job_priority {p1,p2,p3}]
+                     [--mount_dirs MOUNT_DIRS [MOUNT_DIRS ...]]
+                     [--python_paths PYTHON_PATHS [PYTHON_PATHS ...]]
+                     [--credentials_path CREDENTIALS_PATH]
+                     [--mgmt_address MGMT_ADDRESS] [--disable_version_check]
+                     [--num_csx NUM_CSX] [--debug_args [DEBUG_ARGS ...]]
+                     [--debug_args_path DEBUG_ARGS_PATH] [--ini [INI ...]]
+                     params
+
+positional arguments:
+  params                Path to .yaml file with model parameters.
+
+options:
+  -h, --help            show this help message and exit
+  --system_instruction SYSTEM_INSTRUCTION
+                        System instruction to be used in the prompt
+  --apply_chat_template
+                        If True, applies the chat template to the prompt
+  --fewshot_as_multiturn
+                        If True, uses the fewshot as a multi-turn conversation
+  --target_device {CSX}
+                        Target device to run on. Can be one of CSX.
+  -o MODEL_DIR, --model_dir MODEL_DIR
+                        Model directory where checkpoints will be written.
+  --checkpoint_path CHECKPOINT_PATH
+                        Checkpoint to initialize weights from.
+  --load_checkpoint_states LOAD_CHECKPOINT_STATES
+                        Comma-separated string of keys to explicitly specify the components
+                            whose state should be loaded if present in a checkpoint. If this flag is
+                            used, then all component states that exist in a checkpoint, but are not
+                            specified to load via the flag will be ignored. For example, for fine-tuning
+                            runs on a different dataset, setting `--load_checkpoint_states=\model\ will only
+                            load the model state; any `optimizer` or `dataloader` state present in the
+                            checkpoint will not be loaded. By default, the config is `all`, i.e.
+                            everything present in the checkpoint is loaded.
+  --logging LOGGING     Specifies the default logging level. Defaults to INFO.
+  --compile_only        Enables compile only workflow.
+  --validate_only       Enables validate only workflowvalidate_only stops the compilation at ws_km stage for weight streaming mode.
+  --job_labels JOB_LABELS [JOB_LABELS ...]
+                        A list of equal-sign-separated key value pairs served as job labels.
+  --job_priority {p1,p2,p3}
+                        Priority of the job. When launching jobs, valid priority should be between p1 and p3, where p1 is highest priority.
+  --mount_dirs MOUNT_DIRS [MOUNT_DIRS ...]
+                        A list of paths to be mounted to the appliance containers. It should generally contain path to the directory containing the Cerebras modelzoo.
+  --python_paths PYTHON_PATHS [PYTHON_PATHS ...]
+                        A list of paths to be exported into PYTHONPATH for worker containers. It should generally contain path to the directory containing the Cerebras modelzoo, as well as any external python packages needed.
+  --credentials_path CREDENTIALS_PATH
+                        Credentials for cluster access. Defaults to None. If None, the value from a pre-configured location will be used if available.
+  --mgmt_address MGMT_ADDRESS
+                        <host>:<port> for cluster management. If None, the value from a pre-configured location will be used if available. Defaults to None.
+  --disable_version_check
+                        Disable version check for local experimentation and debugging
+  --num_csx NUM_CSX     Number of CS nodes. Defaults to 1
+  --debug_args [DEBUG_ARGS ...]
+                        DebugArgs to pass to the Cerebras compile and execution, pass as --debug_args sub.object.key=value, where value can be bool int, float or str
+  --debug_args_path DEBUG_ARGS_PATH
+                        Path to debugs args file. Defaults to None.
+  --ini [INI ...]       Debug INI settings to pass to the Cerebras compile and execution, pass as --ini key=value, where value can be bool, int, float or str
+
+Eleuther Eval Harness Arguments:
+  --tasks task1,task2, -t task1,task2
+                        Comma-separated list of task names or task groupings to evaluate on.
+                        To get full list of tasks, use one of the commands `lm-eval --tasks {{list_groups,list_subtasks,list_tags,list}}` to list out all available names for task groupings; only (sub)tasks; tags; or all of the above
+  --num_fewshot N, -f N
+                        Number of examples in few-shot context
+  --output_path DIR|DIR/file.json
+                        The path to the output file where the result metrics will be saved. If the path is a directory and log_samples is true, the results will be saved in the directory. Else the parent directory will be used.
+  --limit N|0<N<1, -L N|0<N<1
+                        Limit the number of examples per task. If <1, limit is a percentage of the total number of examples.
+  --use_cache DIR       A path to a sqlite db file for caching model responses. `None` if not caching.
+  --cache_requests {true,refresh,delete}
+                        Speed up evaluation by caching the building of dataset requests. `None` if not caching.
+  --check_integrity     Whether to run the relevant part of the test suite for the tasks.
+  --write_out, -w       Prints the prompt for the first few documents.
+  --log_samples, -s     If True, write out all model outputs and documents for per-sample measurement and post-hoc analysis. Use with --output_path.
+  --show_config         If True, shows the the full config of all tasks at the end of the evaluation.
+  --include_path DIR    Additional path to include if there are external tasks to include.
+  --predict_only, -x    Use with --log_samples. Only model outputs will be saved and metrics will not be evaluated.
+  --seed SEED           Set seed for python's random, numpy, torch, and fewshot sampling.
+                        Accepts a comma-separated list of 4 values for python's random, numpy, torch, and fewshot sampling seeds, respectively, or a single integer to set the same seed for all four.
+                        The values are either an integer or 'None' to not set the seed. Default is `0,1234,1234,1234` (for backward compatibility).
+                        E.g. `--seed 0,None,8,52` sets `random.seed(0)`, `torch.manual_seed(8)`, and fewshot sampling seed to 52. Here numpy's seed is not set since the second value is `None`.
+                        E.g, `--seed 42` sets all four seeds to 42.
+  --trust_remote_code   Sets trust_remote_code to True to execute code to create HF Datasets from the Hub
+  --max_tokens MAX_TOKENS
+                        Maximum number of tokens to generate.
+  --temperature TEMPERATURE
+                        Sampling temperature used for generation.
+  --top_p TOP_P         Top-p parameter used for nucleus sampling.
+  --top_k TOP_K         Top-k parameter used for generation.
+  --keep_data_dir       Specifies whether dumped data samples should be kept for reuse. Defaults to False, i.e. data samples are deleted after the run.
+
+----------------------------------------------------------------------------------------------------------------
+cszoo bigcode_eval -h
+usage: cszoo bigcode_eval [-h] [--prefix PREFIX] [--max_tokens MAX_TOKENS]
+                          [--temperature TEMPERATURE] [--top_p TOP_P]
+                          [--top_k TOP_K] [--n_samples N_SAMPLES]
+                          [--seed SEED] [--tasks task1,task2]
+                          [--instruction_tokens INSTRUCTION_TOKENS]
+                          [--limit LIMIT] [--limit_start LIMIT_START]
+                          [--save_every_k_tasks SAVE_EVERY_K_TASKS]
+                          [--load_generations_path LOAD_GENERATIONS_PATH]
+                          [--load_data_path LOAD_DATA_PATH]
+                          [--metric_output_path METRIC_OUTPUT_PATH]
+                          [--load_generations_intermediate_paths [LOAD_GENERATIONS_INTERMEDIATE_PATHS ...]]
+                          [--save_generations_path SAVE_GENERATIONS_PATH]
+                          [--save_references_path SAVE_REFERENCES_PATH]
+                          [--prompt PROMPT] [--check_references]
+                          [--keep_data_dir] [--target_device {CSX}]
+                          [-o MODEL_DIR] [--checkpoint_path CHECKPOINT_PATH]
+                          [--load_checkpoint_states LOAD_CHECKPOINT_STATES]
+                          [--logging LOGGING] [--compile_only]
+                          [--validate_only]
+                          [--job_labels JOB_LABELS [JOB_LABELS ...]]
+                          [--job_priority {p1,p2,p3}]
+                          [--mount_dirs MOUNT_DIRS [MOUNT_DIRS ...]]
+                          [--python_paths PYTHON_PATHS [PYTHON_PATHS ...]]
+                          [--credentials_path CREDENTIALS_PATH]
+                          [--mgmt_address MGMT_ADDRESS]
+                          [--disable_version_check] [--num_csx NUM_CSX]
+                          [--debug_args [DEBUG_ARGS ...]]
+                          [--debug_args_path DEBUG_ARGS_PATH]
+                          [--ini [INI ...]]
+                          params
+
+positional arguments:
+  params                Path to .yaml file with model parameters.
+
+options:
+  -h, --help            show this help message and exit
+  --target_device {CSX}
+                        Target device to run on. Can be one of CSX.
+  -o MODEL_DIR, --model_dir MODEL_DIR
+                        Model directory where checkpoints will be written.
+  --checkpoint_path CHECKPOINT_PATH
+                        Checkpoint to initialize weights from.
+  --load_checkpoint_states LOAD_CHECKPOINT_STATES
+                        Comma-separated string of keys to explicitly specify the components
+                            whose state should be loaded if present in a checkpoint. If this flag is
+                            used, then all component states that exist in a checkpoint, but are not
+                            specified to load via the flag will be ignored. For example, for fine-tuning
+                            runs on a different dataset, setting `--load_checkpoint_states=\model\ will only
+                            load the model state; any `optimizer` or `dataloader` state present in the
+                            checkpoint will not be loaded. By default, the config is `all`, i.e.
+                            everything present in the checkpoint is loaded.
+  --logging LOGGING     Specifies the default logging level. Defaults to INFO.
+  --compile_only        Enables compile only workflow.
+  --validate_only       Enables validate only workflowvalidate_only stops the compilation at ws_km stage for weight streaming mode.
+  --job_labels JOB_LABELS [JOB_LABELS ...]
+                        A list of equal-sign-separated key value pairs served as job labels.
+  --job_priority {p1,p2,p3}
+                        Priority of the job. When launching jobs, valid priority should be between p1 and p3, where p1 is highest priority.
+  --mount_dirs MOUNT_DIRS [MOUNT_DIRS ...]
+                        A list of paths to be mounted to the appliance containers. It should generally contain path to the directory containing the Cerebras modelzoo.
+  --python_paths PYTHON_PATHS [PYTHON_PATHS ...]
+                        A list of paths to be exported into PYTHONPATH for worker containers. It should generally contain path to the directory containing the Cerebras modelzoo, as well as any external python packages needed.
+  --credentials_path CREDENTIALS_PATH
+                        Credentials for cluster access. Defaults to None. If None, the value from a pre-configured location will be used if available.
+  --mgmt_address MGMT_ADDRESS
+                        <host>:<port> for cluster management. If None, the value from a pre-configured location will be used if available. Defaults to None.
+  --disable_version_check
+                        Disable version check for local experimentation and debugging
+  --num_csx NUM_CSX     Number of CS nodes. Defaults to 1
+  --debug_args [DEBUG_ARGS ...]
+                        DebugArgs to pass to the Cerebras compile and execution, pass as --debug_args sub.object.key=value, where value can be bool int, float or str
+  --debug_args_path DEBUG_ARGS_PATH
+                        Path to debugs args file. Defaults to None.
+  --ini [INI ...]       Debug INI settings to pass to the Cerebras compile and execution, pass as --ini key=value, where value can be bool, int, float or str
+
+Big Code Eval Harness Arguments:
+  --prefix PREFIX       Prefix to add to the prompt. For example InCoder needs prefix='<| file ext=.py |>
+                        '
+  --max_tokens MAX_TOKENS
+                        Maximum number of tokens to generate.
+  --temperature TEMPERATURE
+                        Sampling temperature used for generation.
+  --top_p TOP_P         Top-p parameter used for nucleus sampling.
+  --top_k TOP_K         Top-k parameter used for generation.
+  --n_samples N_SAMPLES
+                        Number of completions to generate for each sample.
+  --seed SEED           Random seed used for evaluation.
+  --tasks task1,task2   To get full list of tasks, go to the bigcode_eval repository: https://github.com/bigcode-project/bigcode-evaluation-harness
+  --instruction_tokens INSTRUCTION_TOKENS
+                        A series of instruction tokens used for instruction-tuning benchamrks separated by comma e.g. <user_message>,<end_user_message>,<assistant_message>
+  --limit LIMIT         Number of samples to solve and evaluate from the benchmark
+  --limit_start LIMIT_START
+                        Optional offset to start from when limiting the number of samples
+  --save_every_k_tasks SAVE_EVERY_K_TASKS
+                        Optional saving after every k tasks
+  --load_generations_path LOAD_GENERATIONS_PATH
+                        Path of file with previously generated solutions, if provided generation is skipped and only evaluation is done
+  --load_data_path LOAD_DATA_PATH
+                        Path of additional data to load for the tasks
+  --metric_output_path METRIC_OUTPUT_PATH
+                        Path to save the results
+  --load_generations_intermediate_paths [LOAD_GENERATIONS_INTERMEDIATE_PATHS ...]
+                        List of paths for saving the intermediate code generations
+  --save_generations_path SAVE_GENERATIONS_PATH
+                        Path for saving the code generations
+  --save_references_path SAVE_REFERENCES_PATH
+                        Path for saving the references solutions/tests
+  --prompt PROMPT       Prompt type to use for generation in HumanEvalPack tasks
+  --check_references    Don't run generation but benchmark groundtruth (useful for debugging)
+  --keep_data_dir       Specifies whether dumped data samples should be kept for reuse. Defaults to False, i.e. data samples are deleted after the run.
+
+----------------------------------------------------------------------------------------------------------------
+cszoo checkpoint -h
+usage: cszoo checkpoint [-h]
+                        {info,delete,copy,move,diff,convert,convert-config,list-converters,list}
+                        ...
+
+positional arguments:
+  {info,delete,copy,move,diff,convert,convert-config,list-converters,list}
+    info                Gives a high level summary of a checkpoint.
+    delete              Delete a checkpoint
+    copy                Copy a checkpoint
+    move                Move a checkpoint.
+    diff                Diff two checkpoints.
+    convert             Convert a checkpoint between CS and HuggingFace or across CS releases.
+    convert-config      Convert a config between CS and HuggingFace or across CS releases.
+    list-converters     List available converters.
+
+options:
+  -h, --help            show this help message and exit
+
+----------------------------------------------------------------------------------------------------------------
+cszoo data_preprocess -h
+usage: cszoo data_preprocess [-h] {list,pull,run} ...
+
+positional arguments:
+  {list,pull,run}
+    list           List all data config variants.
+    pull           Saves a data config file with a given variant name to the local workspace.
+    run            Runs data preprocessing.
+
+options:
+  -h, --help       show this help message and exit
+
+----------------------------------------------------------------------------------------------------------------
+cszoo model -h
+usage: cszoo model [-h] {list,info,describe,init_checkpoint} ...
+
+positional arguments:
+  {list,info,describe,init_checkpoint}
+    list                Lists available models.
+    info                Gives a high level summary of a model and its supported components.
+    describe            Provides detailed information about a given model.
+    init_checkpoint     Generates an initial checkpoint for a model.
+
+options:
+  -h, --help            show this help message and exit
+
+----------------------------------------------------------------------------------------------------------------
+cszoo data_processor -h
+usage: cszoo data_processor [-h] {list,info,describe,benchmark} ...
+
+positional arguments:
+  {list,info,describe,benchmark}
+    list                Lists available data processors.
+    info                Gives a high level summary of a data processor and its supported components.
+    describe            Provides detailed infomation about a given data processor.
+    benchmark           Benchmark a dataloader.
+
+options:
+  -h, --help            show this help message and exit
+
+----------------------------------------------------------------------------------------------------------------
+cszoo config -h
+usage: cszoo config [-h] {pull,validate,convert_legacy,diff,stats} ...
+
+positional arguments:
+  {pull,validate,convert_legacy,diff,stats}
+    pull                Saves a config file with a given variant name to the local workspace.
+    validate            Validate the provided config file.
+    convert_legacy      Convert a legacy params file to the updated format.
+    diff                Find the difference between two config files.
+    stats               Get relevant statistics for a model based on an input config file.
+
+options:
+  -h, --help            show this help message and exit
+
+----------------------------------------------------------------------------------------------------------------
+cszoo assistant -h
+usage: cszoo assistant [-h] [--model MODEL] [--show-reasoning]
+                       [--max-reasoning-steps MAX_REASONING_STEPS]
+                       user_query
+
+positional arguments:
+  user_query            User query for LLM assistant.
+
+options:
+  -h, --help            show this help message and exit
+  --model MODEL         The name of the model to use with Cerebras inference.
+  --show-reasoning      Prints LLM assistant's intermediate reasoning steps to stdout.
+  --max-reasoning-steps MAX_REASONING_STEPS
+                        The maximum number of internal thinking/reasoning steps the model is allowed.
