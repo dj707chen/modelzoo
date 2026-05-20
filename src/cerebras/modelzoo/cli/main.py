@@ -49,7 +49,7 @@ class ModelZooCLI:
                 "related tasks including: training and validation, checkpoint conversion, "
                 "data preprocessing and config management."
             ),
-            epilog=EPILOG,
+            # epilog=EPILOG,
             formatter_class=argparse.RawTextHelpFormatter,
         )
         subparsers = parser.add_subparsers(
@@ -67,10 +67,10 @@ class ModelZooCLI:
                 "Run a model by calling fit. This completes a full training run on the given "
                 "train and validation dataloaders."
             ),
-            epilog=(
-                "For more information on how models are trained, see: "
-                "https://docs.cerebras.net/en/latest/wsc/Model-zoo/trainer-overview.html"
-            ),
+            # epilog=(
+            #     "For more information on how models are trained, see: "
+            #     "https://docs.cerebras.net/en/latest/wsc/Model-zoo/trainer-overview.html"
+            # ),
             formatter_class=argparse.RawTextHelpFormatter,
         )
         seen_args = add_run_args(fit_parser)
@@ -89,10 +89,10 @@ class ModelZooCLI:
                 "Run a model by calling validate. This completes a full validation run on "
                 "the specified validation dataloader."
             ),
-            epilog=(
-                "For more information on how models are validated, see: "
-                "https://docs.cerebras.net/en/latest/wsc/Model-zoo/trainer-overview.html"
-            ),
+            # epilog=(
+            #     "For more information on how models are validated, see: "
+            #     "https://docs.cerebras.net/en/latest/wsc/Model-zoo/trainer-overview.html"
+            # ),
             formatter_class=argparse.RawTextHelpFormatter,
         )
         seen_args = add_run_args(validate_parser)
@@ -109,10 +109,10 @@ class ModelZooCLI:
                 "Run a model by calling validate_all. This runs all upstream and downstream "
                 "validation permutations."
             ),
-            epilog=(
-                "For more information on how models are validated, see: "
-                "https://docs.cerebras.net/en/latest/wsc/Model-zoo/trainer-overview.html"
-            ),
+            # epilog=(
+            #     "For more information on how models are validated, see: "
+            #     "https://docs.cerebras.net/en/latest/wsc/Model-zoo/trainer-overview.html"
+            # ),
             formatter_class=argparse.RawTextHelpFormatter,
         )
         seen_args = add_run_args(validate_all_parser)
@@ -126,10 +126,10 @@ class ModelZooCLI:
         lm_eval_parser = subparsers.add_parser(
             "lm_eval",
             help="Invokes script for running Eleuther Eval Harness.",
-            epilog=(
-                "For more information on Eleuther Eval Harness, see: "
-                "https://docs.cerebras.net/en/latest/wsc/Model-zoo/core_workflows/downstream_eeh.html"
-            ),
+            # epilog=(
+            #     "For more information on Eleuther Eval Harness, see: "
+            #     "https://docs.cerebras.net/en/latest/wsc/Model-zoo/core_workflows/downstream_eeh.html"
+            # ),
             formatter_class=argparse.RawTextHelpFormatter,
         )
         add_eeh_args(lm_eval_parser)
@@ -145,10 +145,10 @@ class ModelZooCLI:
         bigcode_eval_parser = subparsers.add_parser(
             "bigcode_eval",
             help="Invokes script for running BigCode Eval Harness.",
-            epilog=(
-                "For more information on BigCode Eval Harness, see: "
-                "https://docs.cerebras.net/en/latest/wsc/Model-zoo/core_workflows/downstream_bceh.html"
-            ),
+            # epilog=(
+            #     "For more information on BigCode Eval Harness, see: "
+            #     "https://docs.cerebras.net/en/latest/wsc/Model-zoo/core_workflows/downstream_bceh.html"
+            # ),
             formatter_class=argparse.RawTextHelpFormatter,
         )
         add_bigcode_args(bigcode_eval_parser)
@@ -166,7 +166,7 @@ class ModelZooCLI:
             # TODO: Change help message
             help="Get information on or perform some action on a checkpoint(s)",
             # TODO: Change epilog
-            epilog=CheckpointCLI.epilog(),
+            # epilog=CheckpointCLI.epilog(),
             formatter_class=argparse.RawTextHelpFormatter,
         )
         CheckpointCLI.configure_parser(checkpoint_parser)
@@ -177,7 +177,7 @@ class ModelZooCLI:
         preprocess_parser = subparsers.add_parser(
             "data_preprocess",
             help="Run data preprocessing.",
-            epilog=DataPreprocessCLI.epilog(),
+            # epilog=DataPreprocessCLI.epilog(),
             formatter_class=argparse.RawTextHelpFormatter,
         )
         DataPreprocessCLI.configure_parser(preprocess_parser)
@@ -188,7 +188,7 @@ class ModelZooCLI:
         model_parser = subparsers.add_parser(
             "model",
             help="Get information on available models.",
-            epilog=ModelInfoCLI.epilog(),
+            # epilog=ModelInfoCLI.epilog(),
             formatter_class=argparse.RawTextHelpFormatter,
         )
         ModelInfoCLI.configure_parser(model_parser)
@@ -199,7 +199,7 @@ class ModelZooCLI:
         data_parser = subparsers.add_parser(
             "data_processor",
             help="Get information on available data processors.",
-            epilog=DataInfoCLI.epilog(),
+            # epilog=DataInfoCLI.epilog(),
             formatter_class=argparse.RawTextHelpFormatter,
         )
         DataInfoCLI.configure_parser(data_parser)
@@ -210,7 +210,7 @@ class ModelZooCLI:
         config_parser = subparsers.add_parser(
             "config",
             help="Manage model config files.",
-            epilog=ConfigMgmtCLI.epilog(),
+            # epilog=ConfigMgmtCLI.epilog(),
             formatter_class=argparse.RawTextHelpFormatter,
         )
         ConfigMgmtCLI.configure_parser(config_parser)
