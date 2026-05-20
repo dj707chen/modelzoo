@@ -135,172 +135,172 @@ def _args_to_params(args, validate=True, extra_legacy_mapping_fn=None):
 
 
 def add_run_args(parser, devices=["CSX", "CPU", "GPU"]):
-    from cerebras.modelzoo.common.utils.run.cli_parser import (
-        patch_to_collect_specified_args,
-    )
+    # from cerebras.modelzoo.common.utils.run.cli_parser import (
+    #     patch_to_collect_specified_args,
+    # )
 
-    parser.add_argument(
-        "params",
-        help="Path to .yaml file with model parameters.",
-    )
+    # parser.add_argument(
+    #     "params",
+    #     help="Path to .yaml file with model parameters.",
+    # )
 
-    parser.add_argument(
-        "--target_device",
-        choices=devices,
-        help=f"Target device to run on. Can be one of {', '.join(devices)}.",
-    )
+    # parser.add_argument(
+    #     "--target_device",
+    #     choices=devices,
+    #     help=f"Target device to run on. Can be one of {', '.join(devices)}.",
+    # )
 
-    parser.add_argument(
-        "-o",
-        "--model_dir",
-        default=os.path.abspath("./model_dir"),
-        help="Model directory where checkpoints will be written.",
-    )
-    parser.add_argument(
-        "--checkpoint_path",
-        default=None,
-        help="Checkpoint to initialize weights from.",
-    )
-    parser.add_argument(
-        "--load_checkpoint_states",
-        default="all",
-        help=(
-    """Comma-separated string of keys to explicitly specify the components
-    whose state should be loaded if present in a checkpoint. If this flag is 
-    used, then all component states that exist in a checkpoint, but are not 
-    specified to load via the flag will be ignored. For example, for fine-tuning 
-    runs on a different dataset, setting `--load_checkpoint_states=\model\ will only 
-    load the model state; any `optimizer` or `dataloader` state present in the 
-    checkpoint will not be loaded. By default, the config is `all`, i.e. 
-    everything present in the checkpoint is loaded."""
-        ),
-    )
-    parser.add_argument(
-        "--logging",
-        default="INFO",
-        help="Specifies the default logging level. Defaults to INFO.",
-    )
-    parser.add_argument(
-        "--compile_only",
-        action="store_true",
-        help="Enables compile only workflow.",
-    )
-    parser.add_argument(
-        "--validate_only",
-        action="store_true",
-        help="Enables validate only workflow"
-        "validate_only stops the compilation at ws_km stage for weight streaming mode.",
-    )
-    parser.add_argument(
-        "--job_labels",
-        nargs="+",
-        default=list(),
-        help="A list of equal-sign-separated key value pairs served as job labels.",
-    )
-    parser.add_argument(
-        "--job_priority",
-        choices=["p1", "p2", "p3"],
-        default="p2",
-        help="Priority of the job. When launching jobs, valid priority should be between "
-        "p1 and p3, where p1 is highest priority.",
-    )
-    parser.add_argument(
-        "--mount_dirs",
-        nargs="+",
-        default=list(),
-        help="A list of paths to be mounted to the appliance containers. "
-        "It should generally contain path to the directory containing the "
-        "Cerebras modelzoo.",
-    )
-    parser.add_argument(
-        "--python_paths",
-        nargs="+",
-        default=list(),
-        help="A list of paths to be exported into PYTHONPATH for worker containers. "
-        "It should generally contain path to the directory containing the "
-        "Cerebras modelzoo, as well as any external python packages needed.",
-    )
-    parser.add_argument(
-        "--credentials_path",
-        help="Credentials for cluster access. Defaults to None. If None, the value from "
-        "a pre-configured location will be used if available.",
-    )
-    parser.add_argument(
-        "--mgmt_address",
-        help="<host>:<port> for cluster management. If None, the value from "
-        "a pre-configured location will be used if available. Defaults to None.",
-    )
-    parser.add_argument(
-        "--disable_version_check",
-        action="store_true",
-        help="Disable version check for local experimentation and debugging",
-    )
-    parser.add_argument(
-        "--num_csx",
-        default=1,
-        type=int,
-        help="Number of CS nodes. Defaults to 1",
-    )
+    # parser.add_argument(
+    #     "-o",
+    #     "--model_dir",
+    #     default=os.path.abspath("./model_dir"),
+    #     help="Model directory where checkpoints will be written.",
+    # )
+    # parser.add_argument(
+    #     "--checkpoint_path",
+    #     default=None,
+    #     help="Checkpoint to initialize weights from.",
+    # )
+    # parser.add_argument(
+    #     "--load_checkpoint_states",
+    #     default="all",
+    #     help=(
+    # """Comma-separated string of keys to explicitly specify the components
+    # whose state should be loaded if present in a checkpoint. If this flag is 
+    # used, then all component states that exist in a checkpoint, but are not 
+    # specified to load via the flag will be ignored. For example, for fine-tuning 
+    # runs on a different dataset, setting `--load_checkpoint_states=\model\ will only 
+    # load the model state; any `optimizer` or `dataloader` state present in the 
+    # checkpoint will not be loaded. By default, the config is `all`, i.e. 
+    # everything present in the checkpoint is loaded."""
+    #     ),
+    # )
+    # parser.add_argument(
+    #     "--logging",
+    #     default="INFO",
+    #     help="Specifies the default logging level. Defaults to INFO.",
+    # )
+    # parser.add_argument(
+    #     "--compile_only",
+    #     action="store_true",
+    #     help="Enables compile only workflow.",
+    # )
+    # parser.add_argument(
+    #     "--validate_only",
+    #     action="store_true",
+    #     help="Enables validate only workflow"
+    #     "validate_only stops the compilation at ws_km stage for weight streaming mode.",
+    # )
+    # parser.add_argument(
+    #     "--job_labels",
+    #     nargs="+",
+    #     default=list(),
+    #     help="A list of equal-sign-separated key value pairs served as job labels.",
+    # )
+    # parser.add_argument(
+    #     "--job_priority",
+    #     choices=["p1", "p2", "p3"],
+    #     default="p2",
+    #     help="Priority of the job. When launching jobs, valid priority should be between "
+    #     "p1 and p3, where p1 is highest priority.",
+    # )
+    # parser.add_argument(
+    #     "--mount_dirs",
+    #     nargs="+",
+    #     default=list(),
+    #     help="A list of paths to be mounted to the appliance containers. "
+    #     "It should generally contain path to the directory containing the "
+    #     "Cerebras modelzoo.",
+    # )
+    # parser.add_argument(
+    #     "--python_paths",
+    #     nargs="+",
+    #     default=list(),
+    #     help="A list of paths to be exported into PYTHONPATH for worker containers. "
+    #     "It should generally contain path to the directory containing the "
+    #     "Cerebras modelzoo, as well as any external python packages needed.",
+    # )
+    # parser.add_argument(
+    #     "--credentials_path",
+    #     help="Credentials for cluster access. Defaults to None. If None, the value from "
+    #     "a pre-configured location will be used if available.",
+    # )
+    # parser.add_argument(
+    #     "--mgmt_address",
+    #     help="<host>:<port> for cluster management. If None, the value from "
+    #     "a pre-configured location will be used if available. Defaults to None.",
+    # )
+    # parser.add_argument(
+    #     "--disable_version_check",
+    #     action="store_true",
+    #     help="Disable version check for local experimentation and debugging",
+    # )
+    # parser.add_argument(
+    #     "--num_csx",
+    #     default=1,
+    #     type=int,
+    #     help="Number of CS nodes. Defaults to 1",
+    # )
 
-    def parse_value(value: str) -> Union[bool, int, float, str]:
-        """
-        Parses an value from the commandline into its most restricted primitive
-        type.
+    # def parse_value(value: str) -> Union[bool, int, float, str]:
+    #     """
+    #     Parses an value from the commandline into its most restricted primitive
+    #     type.
 
-        Args:
-            value: The string from the commandline
+    #     Args:
+    #         value: The string from the commandline
 
-        Returns:
-            The parsed primitive, or the original string.
+    #     Returns:
+    #         The parsed primitive, or the original string.
 
-        """
-        # Try bool, int, float, string in that order.
-        if value.lower() in ("true", "false"):
-            return value.lower() == "true"
-        try:
-            return int(value)
-        except ValueError:
-            try:
-                return float(value)
-            except ValueError:
-                return value
+    #     """
+    #     # Try bool, int, float, string in that order.
+    #     if value.lower() in ("true", "false"):
+    #         return value.lower() == "true"
+    #     try:
+    #         return int(value)
+    #     except ValueError:
+    #         try:
+    #             return float(value)
+    #         except ValueError:
+    #             return value
 
-    class ParseKV(argparse.Action):
-        def __call__(self, parser, namespace, values, option_string=None):
-            dest = getattr(namespace, self.dest, None) or {}
-            for value in values:
-                key, value = value.split('=', 1)
-                dest[key] = parse_value(value)
-            setattr(namespace, self.dest, dest)
+    # class ParseKV(argparse.Action):
+    #     def __call__(self, parser, namespace, values, option_string=None):
+    #         dest = getattr(namespace, self.dest, None) or {}
+    #         for value in values:
+    #             key, value = value.split('=', 1)
+    #             dest[key] = parse_value(value)
+    #         setattr(namespace, self.dest, dest)
 
-    parser.add_argument(
-        "--debug_args",
-        nargs="*",
-        action=ParseKV,
-        help="DebugArgs to pass to the Cerebras compile and execution, "
-        "pass as --debug_args sub.object.key=value, where value can be bool "
-        "int, float or str",
-    )
+    # parser.add_argument(
+    #     "--debug_args",
+    #     nargs="*",
+    #     action=ParseKV,
+    #     help="DebugArgs to pass to the Cerebras compile and execution, "
+    #     "pass as --debug_args sub.object.key=value, where value can be bool "
+    #     "int, float or str",
+    # )
 
-    parser.add_argument(
-        "--debug_args_path",
-        help="Path to debugs args file. Defaults to None.",
-    )
+    # parser.add_argument(
+    #     "--debug_args_path",
+    #     help="Path to debugs args file. Defaults to None.",
+    # )
 
-    parser.add_argument(
-        "--ini",
-        nargs="*",
-        action=ParseKV,
-        help="Debug INI settings to pass to the Cerebras compile and "
-        "execution, pass as --ini key=value, where value can be bool, int, "
-        "float or str",
-    )
-    parser.add_argument(
-        "--mgmt_namespace",
-        help=argparse.SUPPRESS,
-    )
-    return patch_to_collect_specified_args(parser)
-
+    # parser.add_argument(
+    #     "--ini",
+    #     nargs="*",
+    #     action=ParseKV,
+    #     help="Debug INI settings to pass to the Cerebras compile and "
+    #     "execution, pass as --ini key=value, where value can be bool, int, "
+    #     "float or str",
+    # )
+    # parser.add_argument(
+    #     "--mgmt_namespace",
+    #     help=argparse.SUPPRESS,
+    # )
+    # return patch_to_collect_specified_args(parser)
+    pass
 
 def is_dir(path: str):
     # NOTE: Specifically use os.path here instead of pathlib.Path to be able
