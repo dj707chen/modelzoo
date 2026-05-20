@@ -165,14 +165,14 @@ def add_run_args(parser, devices=["CSX", "CPU", "GPU"]):
         "--load_checkpoint_states",
         default="all",
         help=(
-            "Comma-separated string of keys to explicitly specify the components "
-            "whose state should be loaded if present in a checkpoint. If this flag is "
-            "used, then all component states that exist in a checkpoint, but are not "
-            "specified to load via the flag will be ignored. For example, for fine-tuning "
-            "runs on a different dataset, setting `--load_checkpoint_states=\"model\" will only "
-            "load the model state; any `optimizer` or `dataloader` state present in the "
-            "checkpoint will not be loaded. By default, the config is `all`, i.e. "
-            "everything present in the checkpoint is loaded."
+    """Comma-separated string of keys to explicitly specify the components
+    whose state should be loaded if present in a checkpoint. If this flag is 
+    used, then all component states that exist in a checkpoint, but are not 
+    specified to load via the flag will be ignored. For example, for fine-tuning 
+    runs on a different dataset, setting `--load_checkpoint_states=\model\ will only 
+    load the model state; any `optimizer` or `dataloader` state present in the 
+    checkpoint will not be loaded. By default, the config is `all`, i.e. 
+    everything present in the checkpoint is loaded."""
         ),
     )
     parser.add_argument(
