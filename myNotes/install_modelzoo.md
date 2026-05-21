@@ -43,6 +43,7 @@ On macOS, `cerebras_pytorch` is installed as an editable source install (see `py
 so its wheel data scripts are never extracted into `.venv/bin/`. Copy the script manually:
 
 ```shell
+# macOS only
 if [[ "$(uname)" == "Darwin" ]]; then
     cp -a cerebras-pytorch-src/cerebras_pytorch-2.10.0/cerebras_pytorch-2.10.0.data/scripts/cerebras_install_check \
         .venv/bin/

@@ -14,6 +14,7 @@
 
 import argparse
 import os
+import pprint
 from typing import Union
 
 MZ_CLI_NAME = "cszoo"
@@ -131,6 +132,8 @@ def _args_to_params(args, validate=True, extra_legacy_mapping_fn=None):
             extra_legacy_mapping_fn=extra_legacy_mapping_fn,
         )
 
+    print("_args_to_params:")
+    pprint.pprint(params)
     return params
 
 
