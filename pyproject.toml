@@ -85,6 +85,10 @@ environments = [
   "sys_platform == 'linux'  and platform_machine == 'x86_64'",
   "sys_platform == 'darwin' and platform_machine == 'arm64'",
 ]
+override-dependencies = [
+  "grpcio>=1.60.0; sys_platform == 'darwin' and platform_machine == 'arm64'",
+  "grpcio-tools>=1.60.0; sys_platform == 'darwin' and platform_machine == 'arm64'",
+]
 
 [tool.uv.sources]
 # On macOS ARM64: use CPU-only torch wheels and a local cerebras-pytorch source (no macOS wheel on PyPI).
