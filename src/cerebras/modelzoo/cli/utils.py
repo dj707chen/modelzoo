@@ -96,7 +96,10 @@ def get_table_parser():
 
     return table_parser
 
-
+# Converts parsed CLI args into a params dict:
+# - loads the YAML config file,
+# - merges in any CLI-specified runconfig args,
+# - validates them, then injects them into the trainer params structure.
 def _args_to_params(args, validate=True, extra_legacy_mapping_fn=None):
     from cerebras.modelzoo.common.pytorch_utils import RunConfigParamsValidator
     from cerebras.modelzoo.common.utils.run.cli_parser import (
@@ -138,7 +141,9 @@ def _args_to_params(args, validate=True, extra_legacy_mapping_fn=None):
     pprint.pprint(params)
     return params
 
-
+# Registers all the standard training CLI arguments
+# (device, model dir, checkpoint, logging, compile flags, cluster settings, etc.)
+# onto a given parser.
 def add_run_args(parser, devices=["CSX", "CPU", "GPU"]):
     from cerebras.modelzoo.common.utils.run.cli_parser import (
         patch_to_collect_specified_args,
@@ -311,7 +316,6 @@ def is_dir(path: str):
     # NOTE: Specifically use os.path here instead of pathlib.Path to be able
     # to support S3 paths
     return os.path.basename(path) == "" or os.path.isdir(path)
-
 
 def append_source_basename(source_path: str, dest_path: str) -> str:
     """

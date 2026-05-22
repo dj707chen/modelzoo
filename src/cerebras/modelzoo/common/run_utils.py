@@ -104,7 +104,7 @@ def main(
     from cerebras.modelzoo.trainer.restartable_trainer import RestartableTrainer
     from cerebras.modelzoo.trainer.utils import (
         inject_cli_args_to_trainer_params,
-        run_trainer,
+        run_trainer_with_params,
     )
 
     runconfig_params = params["runconfig"]
@@ -119,4 +119,4 @@ def main(
         if RestartableTrainer.is_restart_config(params):
             return RestartableTrainer(params).run_trainer(mode)
 
-    return run_trainer(mode, params)
+    return run_trainer_with_params(mode, params)

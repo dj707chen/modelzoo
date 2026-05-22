@@ -63,7 +63,7 @@ from cerebras.modelzoo.trainer.utils import (
     create_backend_from_config,
     is_legacy_params,
     mode_to_cmd,
-    run_trainer,
+    run_trainer_with_params,
 )
 from cerebras.modelzoo.trainer.validate import validate_trainer_params
 
@@ -118,7 +118,7 @@ def _run_trainer(
             sys.stdout = open(stdout_pipe, "a")
             sys.stderr = sys.stdout  # Redirect stderr to the same file
 
-        run_trainer(mode, params)
+        run_trainer_with_params(mode, params)
     except Exception as e:  # pylint: disable=broad-except
         traceback_info = traceback.format_exc()
         pipe.send((e, traceback_info))

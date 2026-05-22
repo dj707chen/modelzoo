@@ -18,6 +18,7 @@ This module contains utility functions for configuring a Trainer object from a p
 
 import fnmatch
 import functools
+import pprint
 from collections import Counter
 from collections.abc import Iterable
 from copy import deepcopy
@@ -51,7 +52,7 @@ def mode_to_cmd(mode: ModeT):
         raise ValueError(f"Invalid mode {mode}.")
 
 
-def run_trainer(mode: ModeT, params: Union[Dict[str, Any], BaseConfig]):
+def run_trainer_with_params(mode: ModeT, params: Union[Dict[str, Any], BaseConfig]):
     """Runs training and/or validation using the Trainer with the given params.
 
     Args:
@@ -81,6 +82,7 @@ def run_trainer(mode: ModeT, params: Union[Dict[str, Any], BaseConfig]):
     if isinstance(params, BaseConfig):
         config = params
         try:
+            # 👉 trainer created ❗
             trainer = configure_trainer_from_config(config, mode)
         except:
             import json
@@ -167,6 +169,7 @@ def run_trainer(mode: ModeT, params: Union[Dict[str, Any], BaseConfig]):
                         )
                     )
 
+            # 👉 Train and evaluation❗
             trainer.fit(train_dataloader, val_dataloader, config.fit.ckpt_path)
 
         else:
@@ -178,7 +181,8 @@ def run_trainer(mode: ModeT, params: Union[Dict[str, Any], BaseConfig]):
     else:
         configs = validate_trainer_params(params)
         for config in configs:
-            run_trainer(mode, config)
+            # 👉 Recursively call this function with each config if params is a list of configs❗
+            run_trainer_with_params(mode, config)
 
 
 def create_dataloader_from_config(data_processor_config):
@@ -249,6 +253,8 @@ def cached_cstorch_backend(backend_type, **kwargs):
 
 def create_backend_from_config(init_config):
     backend_params = init_config.backend
+    print("\n[trainer/utils.py create_backend_from_config] Backend params:")
+    pprint.pprint(backend_params)
     if device := init_config.device:
         backend_params.setdefault("backend_type", device)
 
@@ -277,7 +283,9 @@ def create_backend_from_config(init_config):
 
     return cached_cstorch_backend(backend_type, **backend_args)
 
-
+###########################
+# 👉 Create trainer ❗
+###########################
 def configure_trainer_from_config(
     trainer_config: BaseConfig, mode: Optional[ModeT] = None
 ):

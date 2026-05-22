@@ -4,6 +4,16 @@ This document explains how to use the three primary files for managing a Python 
 
 ---
 
+## Quick reference
+
+| File | Audience | Key command |
+|------|----------|-------------|
+| `requirements.txt` | pip / CI | `pip install -r requirements.txt` |
+| `setup.py` | pip / PyPI | `pip install -e .` |
+| `PYTHON-SETUP.md` | Humans | Read it |
+
+---
+
 ## 1. `requirements.txt`
 **Purpose:** Environment Reproducibility.
 
