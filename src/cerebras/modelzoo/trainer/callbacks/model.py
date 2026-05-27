@@ -20,6 +20,7 @@ from warnings import warn
 import torch
 
 import cerebras.pytorch as cstorch
+from torch.nn import Module
 from cerebras.modelzoo.trainer.callbacks import CoreCallback
 
 
@@ -38,7 +39,7 @@ class ModelCallback(CoreCallback):
 
                 - If a torch.nn.Module is passed, it is used as is.
         """
-        self.model = model
+        self.model: Callable[[], Module] | Module = model
 
     def setup(self, trainer):
         if callable(self.model) and not isinstance(self.model, torch.nn.Module):

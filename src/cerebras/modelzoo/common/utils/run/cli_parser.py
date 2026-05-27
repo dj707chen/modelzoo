@@ -33,7 +33,7 @@ def read_params_file(params_file: str) -> dict:
     with open(params_file, 'r') as stream:
         params = yaml.load(stream, Loader=UniqueKeyLoader)
     print()
-    print(f"[cli_parser.py read_params_file] Contents of file {params_file}:")
+    print(f"[cli_parser.py read_params_file] Contents of file {params_file}, type(params) = {type(params)}, params]:")
     pprint.pprint(params)
     return params
 

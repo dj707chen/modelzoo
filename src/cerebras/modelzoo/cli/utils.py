@@ -134,11 +134,13 @@ def _args_to_params(args, validate=True, extra_legacy_mapping_fn=None):
             params,
             extra_legacy_mapping_fn=extra_legacy_mapping_fn,
         )
-    print()
-    print("[utils.py _args_to_params, args]:")
+    print('-------------------------------------------------------------------------------------')
+    print(f"[utils.py _args_to_params, type(args) = {type(args)}, args]:")
     pprint.pprint(vars(args))
-    print("[utils.py _args_to_params, params]:")
+    print('-------------------------------------------------------------------------------------')
+    print(f"[utils.py _args_to_params, type(params) = {type(params)}, params]:")
     pprint.pprint(params)
+    print('-------------------------------------------------------------------------------------')
     return params
 
 # Registers all the standard training CLI arguments

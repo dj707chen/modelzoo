@@ -716,7 +716,7 @@ def construct_multi_phase_trainer_config(model_names):
     return TypeAdapter(MultiPhaseTrainer)
 
 
-def extract_model_names(params: dict):
+def extract_model_names(params: dict) -> Tuple[str, ...]:
     """Extract model names from the given params."""
 
     return tuple(
@@ -724,7 +724,7 @@ def extract_model_names(params: dict):
     )
 
 
-def validate_trainer_params(params: dict):
+def validate_trainer_params(params: dict) -> Union[BaseConfig, List[BaseConfig]]:
     """
     Validate trainer params.
 

@@ -306,7 +306,7 @@ def configure_trainer_from_config(
     def backend_fn():
         return create_backend_from_config(init_config)
 
-    def model_fn():
+    def model_fn() -> torch.nn.Module:
         return init_config.model()
 
     def optimizer_fn(model):
