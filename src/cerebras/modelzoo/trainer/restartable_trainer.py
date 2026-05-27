@@ -529,9 +529,7 @@ class RestartableTrainer(ClassLogger):
 
         self._mp_ctx = mp.get_context('spawn')
         self._telemetry_client = None
-        self._log_level = self.trainer_configs[0]["trainer"]["init"][
-            "logging"
-        ].get("log_level", "INFO")
+        self._log_level = self.trainer_configs[0]["trainer"]["init"]["logging"].get("log_level", "INFO")
 
     @staticmethod
     def is_restart_config(params: Dict[str, Any]) -> bool:

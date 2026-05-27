@@ -59,7 +59,7 @@ class ModelZooCLI:
         #######
         # fit #
         #######
-        fit_parser = subparsers.add_parser(
+        fit_parser: SmartArgumentParser = subparsers.add_parser(
             "fit",
             help=(
                 "Run a model by calling fit. This completes a full training run on the given "
@@ -232,12 +232,10 @@ class ModelZooCLI:
     # Refer myNotes/aiWork/how_args_of_actFunc_of_parser_populated.md
     # for more details on how the args of the func are populated
     @staticmethod
-    def run_trainer(args):
+    def run_trainer(args: argparse.Namespace):
         from cerebras.modelzoo.cli.utils import _args_to_params
-        from cerebras.modelzoo.trainer.restartable_trainer import (
-            RestartableTrainer,
-        )
         from cerebras.modelzoo.trainer.utils import run_trainer_with_params
+        from cerebras.modelzoo.trainer.restartable_trainer import RestartableTrainer
 
         params = _args_to_params(args)
 

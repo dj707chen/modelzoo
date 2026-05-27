@@ -100,7 +100,7 @@ def get_table_parser():
 # - loads the YAML config file,
 # - merges in any CLI-specified runconfig args,
 # - validates them, then injects them into the trainer params structure.
-def _args_to_params(args, validate=True, extra_legacy_mapping_fn=None):
+def _args_to_params(args: argparse.Namespace, validate=True, extra_legacy_mapping_fn=None) -> dict:
     from cerebras.modelzoo.common.pytorch_utils import RunConfigParamsValidator
     from cerebras.modelzoo.common.utils.run.cli_parser import (
         get_params,
@@ -114,11 +114,15 @@ def _args_to_params(args, validate=True, extra_legacy_mapping_fn=None):
         filter(lambda a: a in args.seen_args, vars(args).keys())
     )
 
-    params = get_params(
+    params: dict = get_params(
         args.params,
     )
 
     runconfig_params = params.setdefault("runconfig", {})
+    # "config" and "params" in args are also added to runconfig_params,
+    # we pop them out ince they are not actually part of the runconfig params that the trainer needs.
+    # We still want to add them to runconfig_params first so that they can be validated as part of
+    # the runconfig validation, and also so that they can be injected into the trainer params if needed.
     update_params_from_args(args, specified_args, runconfig_params)
     runconfig_params.pop("config", None)
     runconfig_params.pop("params", None)
@@ -135,10 +139,10 @@ def _args_to_params(args, validate=True, extra_legacy_mapping_fn=None):
             extra_legacy_mapping_fn=extra_legacy_mapping_fn,
         )
     print('-------------------------------------------------------------------------------------')
-    print(f"[utils.py _args_to_params, type(args) = {type(args)}, args]:")
+    print(f"[cli/utils.py _args_to_params] type(args) = {type(args)}, args:") # argparse.Namespace
     pprint.pprint(vars(args))
     print('-------------------------------------------------------------------------------------')
-    print(f"[utils.py _args_to_params, type(params) = {type(params)}, params]:")
+    print(f"[cli/utils.py _args_to_params] type(params) = {type(params)}, params:") # dict
     pprint.pprint(params)
     print('-------------------------------------------------------------------------------------')
     return params

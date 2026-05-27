@@ -33,7 +33,7 @@ def read_params_file(params_file: str) -> dict:
     with open(params_file, 'r') as stream:
         params = yaml.load(stream, Loader=UniqueKeyLoader)
     print()
-    print(f"[cli_parser.py read_params_file] Contents of file {params_file}, type(params) = {type(params)}, params]:")
+    print(f"[common/utils/run/cli_parser.py read_params_file] Contents of file {params_file}, type(params) = {type(params)}, params:")
     pprint.pprint(params)
     return params
 
@@ -591,7 +591,7 @@ def update_params_from_file(params, params_file):
         default_params = read_params_file(params_file)
         update_defaults(params, default_params)
 
-
+# Update params in-place with the arguments from args. CLI arguments take precedence over existing params.
 def update_params_from_args(args: dict, specified_args: Set[str], params: dict):
     """Update params in-place with the arguments from args.
 
@@ -639,6 +639,10 @@ def update_params_from_args(args: dict, specified_args: Set[str], params: dict):
                     params[k] = append_args
                 continue
 
+            # If v is None (CLI flag specified but no value), fall back to the
+            # existing YAML value. The assignment still runs so that k is always
+            # present in params (value None) even when absent from the YAML,
+            # keeping downstream `k in params` checks consistent.
             params[k] = v if v is not None else params.get(k)
 
     mode = params.get("mode")

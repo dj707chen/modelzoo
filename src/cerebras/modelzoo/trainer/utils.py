@@ -1038,10 +1038,11 @@ def convert_legacy_params_to_trainer_params(
 
     return {"trainer": trainer_params}
 
-
+# Returns a new trainer params dict with CLI arguments (runconfig) injected in.
+# CLI arguments take precedence over existing params.
 def inject_cli_args_to_trainer_params(
     runconfig, params, extra_legacy_mapping_fn=None
-):
+) -> dict:
     """Inject CLI arguments into a trainer config."""
     runconfig = deepcopy(runconfig)
     params = deepcopy(params)
@@ -1075,7 +1076,7 @@ def inject_cli_args_to_trainer_params(
     del cli_args["trainer"]["init"]["model"]
 
     trainers = params["trainer"]
-    if isinstance(params["trainer"], (list, tuple)):
+    if isinstance(trainers, (list, tuple)):
         params["trainer"] = []
         for trainer in trainers:
             merged = merge_trainer_params(trainer, cli_args)
