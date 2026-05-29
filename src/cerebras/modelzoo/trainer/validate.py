@@ -18,7 +18,7 @@ import dataclasses
 import inspect
 from copy import deepcopy
 from functools import partial
-from typing import List, Optional, Tuple, Union, get_args
+from typing import List, Optional, Tuple, Type, Union, get_args
 from warnings import catch_warnings, simplefilter, warn
 
 from pydantic import (
@@ -59,7 +59,7 @@ DEFAULT_LOGGERS = {
 }
 
 
-def construct_trainer_config(model_name: str):
+def construct_trainer_config(model_name: str) -> Type[BaseConfig]:
     """
     Construct trainer config class from the given params.
 
@@ -621,9 +621,14 @@ def construct_trainer_config(model_name: str):
 
         return TrainerConfig
 
-
-def unpack_trainer(t):
-    """Unpack multi trainer configuration."""
+# Tuple[dict, ...] is the type annotation for "a tuple of arbitrary length where every element is a dict"
+# — the ... (Ellipsis) is the typing convention for that
+def unpack_trainer(t) -> Tuple[dict, ...]:
+    """Unpack multi trainer configuration, which can be in one of two shapes:
+         Multi-phase: t = {"trainer": [{...}, {...}]} — the "trainer" key holds a list/tuple of phase configs. Unwraps it: t = [{...}, {...}].
+         Single-phase: t = {"trainer": {...}} or t = {... trainer keys directly ...} — "trainer" is a dict (or absent), so wraps the whole thing in a list: t = [t].
+       The goal is to normalize both shapes into a flat list of trainer dicts for uniform handling downstream.
+    """
     if isinstance(t, dict):
         if isinstance(t.get("trainer"), (tuple, list)):
             t = t.get("trainer")
@@ -697,15 +702,20 @@ def unpack_trainer(t):
                 raise KeyError("Model configuration must have a 'name' key.")
 
             return d["trainer"]
-
-        return tuple(map(check, t))
+        
+        # map always returns a map object (a lazy iterator) regardless of what you pass in — it doesn't preserve the input type.
+        # So even if t is a tuple, map(check, t) on line 705 is still a map object, not a tuple.
+        # The next line then converts that map object into a tuple.
+        trainerConfigList = map(check, t)
+        tupled = tuple(trainerConfigList)
+        return tupled
 
     raise TypeError(
         f"Expected trainer to be a dict, or list of dicts. Got: {type(t)}"
     )
 
 
-def construct_multi_phase_trainer_config(model_names):
+def construct_multi_phase_trainer_config(model_names) -> TypeAdapter:
     """Construct multi-phase trainer config."""
 
     MultiPhaseTrainer = Annotated[
@@ -747,9 +757,8 @@ def validate_trainer_params(params: dict) -> Union[BaseConfig, List[BaseConfig]]
 
     metadata_params = deepcopy(params)
     try:
-        return construct_multi_phase_trainer_config(
-            extract_model_names(params)
-        ).validate_python(
+        multi_phase_trainer_config = construct_multi_phase_trainer_config(extract_model_names(params))
+        multi_phase_trainer_config.validate_python(
             params,
             context={"metadata_params": metadata_params},
         )

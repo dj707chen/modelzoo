@@ -80,6 +80,8 @@ def run_trainer_with_params(mode: ModeT, params: Union[Dict[str, Any], BaseConfi
         )
 
     if isinstance(params, BaseConfig):
+        print(f"\n[trainer/utils.py run_trainer_with_params] Running trainer in mode: {mode} with params (instance of BaseConfig) {type(params)}:")
+        pprint.pprint(params)
         config = params
         try:
             # 👉 trainer created ❗
@@ -179,7 +181,11 @@ def run_trainer_with_params(mode: ModeT, params: Union[Dict[str, Any], BaseConfi
             )
 
     else:
+        print(f"\n[trainer/utils.py run_trainer_with_params] Running trainer in mode: {mode} with params (not instance of BaseConfig) {type(params)}:")
+        pprint.pprint(params)
         configs = validate_trainer_params(params)
+        print(f"\n[trainer/utils.py run_trainer_with_params] configs {type(configs)}:")
+        pprint.pprint(configs)
         for config in configs:
             # 👉 Recursively call this function with each config if params is a list of configs❗
             run_trainer_with_params(mode, config)
