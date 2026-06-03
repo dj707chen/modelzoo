@@ -58,7 +58,13 @@ DEFAULT_LOGGERS = {
     "TelemetryLogger": {},
 }
 
-
+# CC: explain the function signature:
+#   model_name: str — the name of a model (e.g. "gpt2", "llama") used to look up and
+#       build the appropriate config class.
+#   -> Type[BaseConfig] — returns the class itself (not an instance), specifically a subclass of BaseConfig.
+#       The caller can then instantiate it or inspect it.
+#       The Type[X] return annotation is the standard way to say
+#           "this function returns a class, not an object of that class."
 def construct_trainer_config(model_name: str) -> Type[BaseConfig]:
     """
     Construct trainer config class from the given params.
@@ -189,7 +195,7 @@ def construct_trainer_config(model_name: str) -> Type[BaseConfig]:
         @classmethod
         def compute_milestones(cls, data):
             if issubclass(
-                cls.__orig_class__, cstorch.optim.scheduler.SequentialScheduler
+                    cls.__orig_class__, cstorch.optim.scheduler.SequentialScheduler
             ) and not issubclass(
                 cls.__orig_class__,
                 cstorch.optim.scheduler.PiecewiseConstantScheduler,
@@ -210,14 +216,14 @@ def construct_trainer_config(model_name: str) -> Type[BaseConfig]:
                     )
 
             if (
-                issubclass(
-                    cls.__orig_class__,
-                    (
-                        cstorch.optim.scheduler.SequentialScheduler,
-                        cstorch.optim.scheduler.ChainedScheduler,
-                    ),
-                )
-                and "param_group_tags" in data
+                    issubclass(
+                        cls.__orig_class__,
+                        (
+                                cstorch.optim.scheduler.SequentialScheduler,
+                                cstorch.optim.scheduler.ChainedScheduler,
+                        ),
+                    )
+                    and "param_group_tags" in data
             ):
                 param_group_tags = data["param_group_tags"]
 
@@ -621,15 +627,19 @@ def construct_trainer_config(model_name: str) -> Type[BaseConfig]:
 
         return TrainerConfig
 
+
 # Tuple[dict, ...] is the type annotation for "a tuple of arbitrary length where every element is a dict"
 # — the ... (Ellipsis) is the typing convention for that
 def unpack_trainer(t) -> Tuple[dict, ...]:
     """Unpack multi trainer configuration, which can be in one of two shapes:
-         Multi-phase: t = {"trainer": [{...}, {...}]} — the "trainer" key holds a list/tuple of phase configs. Unwraps it: t = [{...}, {...}].
-         Single-phase: t = {"trainer": {...}} or t = {... trainer keys directly ...} — "trainer" is a dict (or absent), so wraps the whole thing in a list: t = [t].
+         Multi-phase: t = {"trainer": [{...}, {...}]} — the "trainer" key holds a list/tuple of phase configs.
+            Unwraps it: t = [{...}, {...}].
+         Single-phase: t = {"trainer": {...}} or t = {... trainer keys directly ...} — "trainer" is a dict (or absent),
+            so wraps the whole thing in a list: t = [t].
        The goal is to normalize both shapes into a flat list of trainer dicts for uniform handling downstream.
     """
     if isinstance(t, dict):
+        # The value of key "trainer" is tuple or list
         if isinstance(t.get("trainer"), (tuple, list)):
             t = t.get("trainer")
         else:
@@ -649,28 +659,29 @@ def unpack_trainer(t) -> Tuple[dict, ...]:
                     "Please ensure that the params contain a 'trainer' key."
                 )
 
+            dt = d["trainer"]
             # trainer.init
-            if not isinstance(d["trainer"], dict):
+            if not isinstance(dt, dict):
                 raise TypeError(
                     f"Expected trainer configuration to be a dict. "
-                    f"Got: {type(d['trainer'])}"
+                    f"Got: {type(dt)}"
                 )
-            if "init" not in d["trainer"]:
+            if "init" not in dt:
                 raise KeyError("Trainer configuration must have an 'init' key.")
 
             # trainer.init.model
-            if not isinstance(d["trainer"]["init"], dict):
+            if not isinstance(dt["init"], dict):
                 raise TypeError(
                     f"Expected trainer init configuration to be a dict. "
-                    f"Got: {type(d['trainer']['init'])}"
+                    f"Got: {type(dt['init'])}"
                 )
-            if "model" not in d["trainer"]["init"]:
+            if "model" not in dt["init"]:
                 raise KeyError(
                     "Trainer init configuration must have a 'model' key."
                 )
 
             # trainer.init.model.name
-            model_dict = d["trainer"]["init"]["model"]
+            model_dict = dt["init"]["model"]
             if not isinstance(model_dict, dict):
                 raise TypeError(
                     f"Expected trainer init model configuration to be a dict. "
@@ -686,8 +697,8 @@ def unpack_trainer(t) -> Tuple[dict, ...]:
                 )
 
                 if (
-                    "name" in model_dict
-                    and model_dict["model_name"] != model_dict["name"]
+                        "name" in model_dict
+                        and model_dict["model_name"] != model_dict["name"]
                 ):
                     raise ValueError(
                         f"Got conflicting model names:"
@@ -698,13 +709,14 @@ def unpack_trainer(t) -> Tuple[dict, ...]:
                     )
 
                 model_dict["name"] = model_dict.pop("model_name")
-            elif "name" not in d["trainer"]["init"]["model"]:
+            elif "name" not in dt["init"]["model"]:
                 raise KeyError("Model configuration must have a 'name' key.")
 
-            return d["trainer"]
-        
-        # map always returns a map object (a lazy iterator) regardless of what you pass in — it doesn't preserve the input type.
-        # So even if t is a tuple, map(check, t) on line 705 is still a map object, not a tuple.
+            return dt
+
+        # map always returns a map object (a lazy iterator) regardless of what you pass in
+        # — it doesn't preserve the input type.
+        # So even if t is a tuple, map(check, t) below is still a map object, not a tuple.
         # The next line then converts that map object into a tuple.
         trainerConfigList = map(check, t)
         tupled = tuple(trainerConfigList)
@@ -715,17 +727,17 @@ def unpack_trainer(t) -> Tuple[dict, ...]:
     )
 
 
-def construct_multi_phase_trainer_config(model_names) -> TypeAdapter:
+def construct_multi_phase_trainer_config(llm_model_names) -> TypeAdapter:
     """Construct multi-phase trainer config."""
 
     MultiPhaseTrainer = Annotated[
-        Tuple[tuple(map(construct_trainer_config, model_names))],
+        Tuple[tuple(map(construct_trainer_config, llm_model_names))],
         BeforeValidator(unpack_trainer),
     ]
 
     return TypeAdapter(MultiPhaseTrainer)
 
-
+# Extract LLM model names
 def extract_model_names(params: dict) -> Tuple[str, ...]:
     """Extract model names from the given params."""
 
@@ -757,7 +769,7 @@ def validate_trainer_params(params: dict) -> Union[BaseConfig, List[BaseConfig]]
 
     metadata_params = deepcopy(params)
     try:
-        multi_phase_trainer_config = construct_multi_phase_trainer_config(extract_model_names(params))
+        multi_phase_trainer_config: TypeAdapter = construct_multi_phase_trainer_config(extract_model_names(params))
         multi_phase_trainer_config.validate_python(
             params,
             context={"metadata_params": metadata_params},
