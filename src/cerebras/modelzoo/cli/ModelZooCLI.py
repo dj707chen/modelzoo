@@ -14,8 +14,10 @@
 
 # PYTHON_ARGCOMPLETE_OK
 import argparse
+from ast import Dict
 
 import argcomplete
+from transformers import Any
 
 # subclass ArgumentParser to handle subparser errors better
 class SmartArgumentParser(argparse.ArgumentParser):
@@ -237,7 +239,7 @@ class ModelZooCLI:
         from cerebras.modelzoo.trainer.utils import run_trainer_with_params
         from cerebras.modelzoo.trainer.restartable_trainer import RestartableTrainer
 
-        params = _args_to_params(args)
+        params: dict = _args_to_params(args)
 
         if RestartableTrainer.is_restart_config(params):
             RestartableTrainer(params).run_trainer(args.mode)

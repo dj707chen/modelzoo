@@ -733,6 +733,12 @@ def construct_multi_phase_trainer_config(llm_model_names) -> TypeAdapter:
     MultiPhaseTrainer = Annotated[
         Tuple[tuple(map(construct_trainer_config, llm_model_names))],
         BeforeValidator(unpack_trainer),
+        # The unpack_trainer function is used as a BeforeValidator to preprocess the input data before
+        # it is validated against the schema defined by the TrainerConfig created by construct_trainer_config.
+        # It normalizes the input into a consistent format (a tuple of trainer dicts) regardless of
+        # whether the user provided a single trainer config or a list of trainer configs.
+        # This allows the rest of the validation logic to assume a uniform structure for the trainer configurations,
+        # simplifying the implementation and improving robustness against different input shapes.
     ]
 
     return TypeAdapter(MultiPhaseTrainer)
@@ -751,7 +757,14 @@ def validate_trainer_params(params: dict) -> Union[BaseConfig, List[BaseConfig]]
     Validate trainer params.
 
     Args:
-        params: Trainer params dictionary.
+        params: Trainer params dictionary. Despite the type annotation, this may
+            also be a ``BaseConfig`` instance — in which case it is returned
+            immediately (idempotency guard). This occurs when callers such as
+            ``run_trainer_with_params`` validate a raw dict, receive a
+            ``List[BaseConfig]`` back, and then recurse per-config; if any
+            code in that path calls this function again with an already-validated
+            config the early return prevents a crash on the ``params["trainer"]``
+            key lookup below.
         model_name: The model name to use if not present in the params dictionary.
 
     Returns:
