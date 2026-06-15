@@ -109,11 +109,28 @@ def construct_trainer_config(model_name: str) -> Type[BaseConfig]:
         #       that optimizer params have adjust_learning_rate.
         #       This should be removed once we have a better way
         #       to handle this.
+        # Q: explain the comment at line 109.
+        # CC: comment explains why extra="allow" is set on OptimConfig —
+        #   normally you'd want Pydantic to reject unknown fields, but optimizer parameter groups can contain
+        #   adjust_learning_rate, which isn't a declared field on any optimizer config class.
+        # Why extra="allow" + include_extra=False:
+        #   Optimizer param groups can contain `adjust_learning_rate`, which is not a
+        #   declared field on any optimizer config class. extra="allow" lets Pydantic
+        #   accept it instead of raising a validation error, while include_extra=False
+        #   keeps it out of the serialized output.
+        #   warn_extra() then manually inspects model_extra and warns on anything
+        #   other than `adjust_learning_rate`, so the permissiveness is intentionally
+        #   narrow — just enough to tolerate that one undeclared field.
+        #   Ideally adjust_learning_rate would be a proper declared field and extra
+        #   could go back to "forbid".
+        # model: Pydantic model config dict, not to be confused w/ LL model
         model_config = dict(extra="allow", include_extra=False)
 
         @model_validator(mode="after")
         def warn_extra(self):  # pylint: disable=missing-function-docstring
             model_extra = set(self.model_extra) - {"adjust_learning_rate"}
+            # The idiomatic Python way to check if a set is non-empty is just "if my_set:",
+            # which is more readable and efficient than "if len(my_set) > 0:"
             if model_extra:
                 signature = ", ".join(
                     (
@@ -135,6 +152,12 @@ def construct_trainer_config(model_name: str) -> Type[BaseConfig]:
 
     optim_annotation = Annotated[
         Union[
+            # Q: The Union at line 137 has only one component tuple, why don't annotate on the tuple directly?
+            # CC: Union[tuple(gen)] is the standard idiom for building a Union from a
+            # dynamically generated sequence of types. Union's __class_getitem__
+            # unpacks a tuple argument into type args, making this equivalent to
+            # Union[T1, T2, ...] where the Ts are not known until runtime.
+            # A bare tuple(gen) annotation would mean "a tuple value", not "one of these types".
             tuple(
                 Annotated[
                     create_config_class(
@@ -164,6 +187,24 @@ def construct_trainer_config(model_name: str) -> Type[BaseConfig]:
                 ]
                 for cls in retrieve_all_subclasses(cstorch.optim.Optimizer)
             )
+            # Q: explain the definition of the cstorch.optim.OptimConfig class.
+            # CC: class cstorch.optim.Optimizer(torch.optim.Optimizer, ABC) # multiple inheritance
+            #   - torch.optim.Optimizer — provides all the standard optimizer machinery:
+            #     parameter group management, step(), zero_grad(), state dict serialization, etc.
+            #   - ABC — marks this class as abstract, meaning you can't instantiate it directly.
+            #     Subclasses must implement any methods decorated with @abstractmethod
+            #       (in this case, preinitialize and step, as the docstring describes).
+            # Python ABC (Abstract Base Class) value:
+            # ABC enforces that subclasses implement required methods at instantiation time,
+            # not at call time. Combined with @abstractmethod, Python raises a TypeError
+            # immediately when you try to instantiate a subclass that hasn't implemented
+            # the required method — catching the mistake earlier than raise NotImplementedError().
+            # Secondary benefits:
+            #   - Self-documenting contract: @abstractmethod clearly signals to subclass authors
+            #     what they must implement, more explicit than a docstring.
+            #   - In this codebase, cstorch.optim.Optimizer uses ABC to ensure every concrete
+            #     Cerebras optimizer implements preinitialize(), which sets up optimizer state
+            #     ahead of time for the Cerebras compiler/execution model.
         ],
         discriminator,
         BeforeValidator(partial(unpack, name="optimizer")),
@@ -782,7 +823,7 @@ def validate_trainer_params(params: dict) -> Union[BaseConfig, List[BaseConfig]]
 
     metadata_params = deepcopy(params)
     try:
-        multi_phase_trainer_config: TypeAdapter = construct_multi_phase_trainer_config(extract_model_names(params))
+        multi_phase_trainer_config: TypeAdapter = +construct_multi_phase_trainer_config(extract_model_names(params))
         multi_phase_trainer_config.validate_python(
             params,
             context={"metadata_params": metadata_params},

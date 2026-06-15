@@ -98,11 +98,22 @@ def create_config_class(
 
         return annotation
 
-    if isinstance(cls, type):
+    # The cls parameter's real value might not be of type "type", for example,
+    # it could be a pydantic dataclass that is not a class. In that case, we should inspect
+    # the signature of the underlying function instead of the dataclass wrapper.
+    if isinstance(cls, type):  # cls is an actual class
         parameters = dict(inspect.signature(cls.__init__).parameters)
         # TODO: What if the first argument is not called "self"?
         parameters.pop("self", None)
-    else:
+    else: # cls is a plain function (callable, not a class)
+        # Q: Is it possible that the real value of the parameter cls might even not be a callable?
+        # CC: Technically the code doesn't guard against it, but passing a non-callable would fail
+        # at two points:
+        # 1. inspect.signature(cls) above would raise a TypeError for anything that isn't callable
+        #    and doesn't have a __signature__ attribute.
+        # 2. cls.__name__ (line 203) would raise AttributeError for arbitrary objects that don't have that attribute.
+        #    So while the type hint doesn't enforce it, the runtime behavior effectively requires cls
+        #    to be a callable with a __name__. A more precise annotation would be Union[type, Callable].
         parameters = dict(inspect.signature(cls).parameters)
 
     fields = {}
@@ -131,6 +142,7 @@ def create_config_class(
             # Only include the field if the annotation is not None
             fields[name] = (
                 annotation,
+                # Ellipsis is used by pydantic to indicate required fields
                 (param.default if param.default is not inspect._empty else ...),
             )
         else:
@@ -198,7 +210,31 @@ def create_config_class(
     try:
         with catch_warnings():
             simplefilter("ignore", category=RuntimeWarning)
-            return create_model(
+            # These are Python overloads — two @overload stubs plus one actual implementation.
+            # The three differ in their return types based on what __base__ is:
+            #   Overload	                    __base__	                                Return type
+            #   1st (@overload, line 1431)	    None (explicitly)	                        type[BaseModel]
+            #   2nd (@overload, line 1446)	    type[ModelT] or tuple[type[ModelT], ...]	type[ModelT]
+            #   3rd (implementation, line 1460)	type[ModelT] | tuple[...] | None	        type[ModelT]
+            # In practice:
+            # When you call create_model(...) with no __base__, the type checker infers the return
+            #   as type[BaseModel] — a plain Pydantic model.
+            # When you pass a __base__ (a custom subclass), the type checker uses the generic ModelT
+            #   to propagate that concrete type through, so the return is type[YourSubclass]
+            #   rather than the less-specific type[BaseModel].
+            # The third definition is the runtime implementation and accepts both cases;
+            #   the first two exist solely for type-checker narrowing via @overload.
+            #
+            # Q: When is the call to create_model resolved to the definition at line 1446 but not to line 1460?
+            # CC: Never at runtime. The @overload stubs (lines 1431 and 1446) are erased at runtime —
+            #   Python replaces each one with the next definition, so only the implementation at line 1460
+            #   ever exists in memory when the module finishes loading.
+            #   The overloads exist exclusively for static type checkers (mypy, pyright). When you call
+            #   create_model(...), the type checker picks the matching overload to determine the return type:
+            #     - No __base__ → matches line 1431 → inferred return is type[BaseModel]
+            #     - __base__=MyModel → matches line 1446 → inferred return is type[MyModel]
+            #   At runtime, every call goes straight to line 1460 regardless.
+            return create_model( # 《--- This is the line that actually creates the config class❗
                 name,
                 __orig_class__=(ClassVar, cls),
                 **fields,
