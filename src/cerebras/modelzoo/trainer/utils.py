@@ -257,7 +257,7 @@ def cached_cstorch_backend(backend_type, **kwargs):
     return cstorch.backend(backend_type, **kwargs)
 
 
-def create_backend_from_config(init_config):
+def create_backend_from_config(init_config: BaseConfig):
     backend_params = init_config.backend
     print("\n[trainer/utils.py create_backend_from_config] Backend params:")
     pprint.pprint(backend_params)

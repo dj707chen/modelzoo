@@ -806,10 +806,14 @@ def validate_trainer_params(params: dict) -> Union[BaseConfig, List[BaseConfig]]
             code in that path calls this function again with an already-validated
             config the early return prevents a crash on the ``params["trainer"]``
             key lookup below.
-        model_name: The model name to use if not present in the params dictionary.
 
     Returns:
-        A list of trainer configs
+        The validated trainer config: the original ``params`` if it was already
+        a ``BaseConfig`` instance, otherwise a single ``BaseConfig`` or a list
+        of them (for multi-phase training) as produced by Pydantic validation.
+
+    Raises:
+        KeyError: If ``params`` is a dict but does not contain a ``"trainer"`` key.
     """
     # Params have already been validated
     if isinstance(params, BaseConfig):
@@ -824,7 +828,7 @@ def validate_trainer_params(params: dict) -> Union[BaseConfig, List[BaseConfig]]
     metadata_params = deepcopy(params)
     try:
         multi_phase_trainer_config: TypeAdapter = +construct_multi_phase_trainer_config(extract_model_names(params))
-        multi_phase_trainer_config.validate_python(
+        return multi_phase_trainer_config.validate_python(
             params,
             context={"metadata_params": metadata_params},
         )
