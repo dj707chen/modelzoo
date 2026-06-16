@@ -1,6 +1,6 @@
 # Install modelzoo
 
-Note: Must run it on Linux, when I ran on MacOS, I got the following errors:
+Note: Must run it on Linux, when I ran on macOS, I got the following errors:
         Obtaining file:///Users/weiping/tmp/modelzoo
           Installing build dependencies ... done
           Checking if build backend supports build_editable ... done

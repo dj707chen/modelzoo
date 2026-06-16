@@ -14,10 +14,9 @@
 
 # PYTHON_ARGCOMPLETE_OK
 import argparse
-from ast import Dict
+from typing import Any, Dict
 
 import argcomplete
-from transformers import Any
 
 # subclass ArgumentParser to handle subparser errors better
 class SmartArgumentParser(argparse.ArgumentParser):

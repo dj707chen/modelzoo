@@ -827,7 +827,7 @@ def validate_trainer_params(params: dict) -> Union[BaseConfig, List[BaseConfig]]
 
     metadata_params = deepcopy(params)
     try:
-        multi_phase_trainer_config: TypeAdapter = +construct_multi_phase_trainer_config(extract_model_names(params))
+        multi_phase_trainer_config: TypeAdapter = construct_multi_phase_trainer_config(extract_model_names(params))
         return multi_phase_trainer_config.validate_python(
             params,
             context={"metadata_params": metadata_params},
