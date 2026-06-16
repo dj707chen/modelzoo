@@ -52,7 +52,120 @@ def mode_to_cmd(mode: ModeT):
         raise ValueError(f"Invalid mode {mode}.")
 
 
-def run_trainer_with_params(mode: ModeT, params: Union[Dict[str, Any], BaseConfig]):
+def run_trainer_with_parsed_params(mode: ModeT, config: BaseConfig):
+    """Runs training and/or validation using the Trainer with the given config.
+
+    Args:
+        mode: The mode to run the Trainer in. Can be one of:
+            - "train": Train the model.
+            - "eval": Evaluate the model.
+            - "train_and_eval": Train the model and then evaluate it.
+            - "eval_all": Evaluate the model on all available checkpoints and dataloaders.
+        config: The configuration for the Trainer.
+    """
+    print(f"\n[trainer/utils.py run_trainer_with_params] Running trainer in mode: {mode} with config (instance of BaseConfig) {type(config)}:")
+    pprint.pprint(config)
+    try:
+        # 👉 trainer created ❗
+        trainer = configure_trainer_from_config(config, mode)
+    except:
+        import json
+
+        warn(
+            f"Failed to configure trainer from config:\n"
+            f"{json.dumps(config.model_dump(), sort_keys=False, indent=4)}"
+        )
+        raise
+
+    if mode == "eval":
+        if not config.validate:
+            raise RuntimeError(
+                "Validation requested but config is missing `validate` section. "
+                "Please add a `validate` section to your trainer configuration."
+            )
+
+        trainer.validate(
+            val_dataloader=create_dataloader_from_config(
+                config.validate.val_dataloader
+            ),
+            ckpt_path=config.validate.ckpt_path,
+        )
+
+    elif mode == "eval_all":
+        if not config.validate_all:
+            raise RuntimeError(
+                "Validation requested but config is missing `validate_all` section. "
+                "Please add a `validate_all` section to your trainer configuration."
+            )
+
+        val_dataloaders = list(
+            map(
+                create_dataloader_from_config,
+                config.validate_all.val_dataloaders,
+            )
+        )
+
+        ckpt_paths = config.validate_all.ckpt_paths
+        if ckpt_paths is Ellipsis:
+            all_ckpts = []
+            if trainer.checkpoint.autoload_last_checkpoint:
+                all_ckpts = trainer.checkpoint.get_all_checkpoints(
+                    trainer.model_dir
+                )
+            if all_ckpts:
+                ckpt_paths = all_ckpts
+            else:
+                raise FileNotFoundError(
+                    f"No checkpoints were found for evaluation. "
+                    f"Please pass in at least one checkpoint via ckpt_paths or "
+                    f"set `autoload_last_checkpoint` to True and ensure that the model "
+                    f"directory \"{trainer.model_dir}\" contains at least one "
+                    f"checkpoint whose name matches the expected format of: "
+                    f"{trainer.checkpoint.checkpoint_name}"
+                )
+
+        trainer.validate_all(
+            val_dataloaders=val_dataloaders,
+            ckpt_paths=ckpt_paths,
+        )
+
+    elif mode in ("train", "train_and_eval"):
+        if not config.fit:
+            raise RuntimeError(
+                "Fit requested but config is missing `fit` section. "
+                "Please add a `fit` section to your trainer configuration."
+            )
+
+        train_dataloader = create_dataloader_from_config(
+            config.fit.train_dataloader
+        )
+        val_dataloader = None
+
+        if mode == "train":
+            # Disable all validation during training including eval harness
+            trainer.loop.eval_frequency = None
+        else:
+            if config.fit.val_dataloader is not None:
+                val_dataloader = list(
+                    map(
+                        create_dataloader_from_config,
+                        config.fit.val_dataloader,
+                    )
+                )
+
+        # 👉 Train and evaluation❗
+        trainer.fit(train_dataloader, val_dataloader, config.fit.ckpt_path)
+
+    else:
+        raise ValueError(
+            f"Invalid mode \"{mode}\". "
+            f"Expected one of: train, train_and_eval, eval, eval_all."
+        )
+
+# Split out from run_trainer_with_parsed_params so dict params (incl. legacy
+# params and multi-phase configs that validate to a list) get normalized and
+# validated into BaseConfig instances before delegating per-config execution.
+def run_trainer_with_params(mode: ModeT, params: Dict[str, Any]):
     """Runs training and/or validation using the Trainer with the given params.
 
     Args:
@@ -61,11 +174,11 @@ def run_trainer_with_params(mode: ModeT, params: Union[Dict[str, Any], BaseConfi
             - "eval": Evaluate the model.
             - "train_and_eval": Train the model and then evaluate it.
             - "eval_all": Evaluate the model on all available checkpoints and dataloaders.
-        params: A dictionary/object containing the configuration for the Trainer.
+        params: A dictionary containing the configuration for the Trainer.
             If legacy keys are detected, they will be automatically converted
             to the new format.
     """
-    if isinstance(params, dict) and is_legacy_params(params):
+    if is_legacy_params(params):
         warn(
             f"Detected that legacy params are being used. "
             f"Automatically converting params to new format. "
@@ -79,116 +192,14 @@ def run_trainer_with_params(mode: ModeT, params: Union[Dict[str, Any], BaseConfi
             obj_filter=lambda obj: obj is None,
         )
 
-    if isinstance(params, BaseConfig):
-        print(f"\n[trainer/utils.py run_trainer_with_params] Running trainer in mode: {mode} with params (instance of BaseConfig) {type(params)}:")
-        pprint.pprint(params)
-        config = params
-        try:
-            # 👉 trainer created ❗
-            trainer = configure_trainer_from_config(config, mode)
-        except:
-            import json
-
-            warn(
-                f"Failed to configure trainer from config:\n"
-                f"{json.dumps(config.model_dump(), sort_keys=False, indent=4)}"
-            )
-            raise
-
-        if mode == "eval":
-            if not config.validate:
-                raise RuntimeError(
-                    "Validation requested but config is missing `validate` section. "
-                    "Please add a `validate` section to your trainer configuration."
-                )
-
-            trainer.validate(
-                val_dataloader=create_dataloader_from_config(
-                    config.validate.val_dataloader
-                ),
-                ckpt_path=config.validate.ckpt_path,
-            )
-
-        elif mode == "eval_all":
-            if not config.validate_all:
-                raise RuntimeError(
-                    "Validation requested but config is missing `validate_all` section. "
-                    "Please add a `validate_all` section to your trainer configuration."
-                )
-
-            val_dataloaders = list(
-                map(
-                    create_dataloader_from_config,
-                    config.validate_all.val_dataloaders,
-                )
-            )
-
-            ckpt_paths = config.validate_all.ckpt_paths
-            if ckpt_paths is Ellipsis:
-                all_ckpts = []
-                if trainer.checkpoint.autoload_last_checkpoint:
-                    all_ckpts = trainer.checkpoint.get_all_checkpoints(
-                        trainer.model_dir
-                    )
-                if all_ckpts:
-                    ckpt_paths = all_ckpts
-                else:
-                    raise FileNotFoundError(
-                        f"No checkpoints were found for evaluation. "
-                        f"Please pass in at least one checkpoint via ckpt_paths or "
-                        f"set `autoload_last_checkpoint` to True and ensure that the model "
-                        f"directory \"{trainer.model_dir}\" contains at least one "
-                        f"checkpoint whose name matches the expected format of: "
-                        f"{trainer.checkpoint.checkpoint_name}"
-                    )
-
-            trainer.validate_all(
-                val_dataloaders=val_dataloaders,
-                ckpt_paths=ckpt_paths,
-            )
-
-        elif mode in ("train", "train_and_eval"):
-            if not config.fit:
-                raise RuntimeError(
-                    "Fit requested but config is missing `fit` section. "
-                    "Please add a `fit` section to your trainer configuration."
-                )
-
-            train_dataloader = create_dataloader_from_config(
-                config.fit.train_dataloader
-            )
-            val_dataloader = None
-
-            if mode == "train":
-                # Disable all validation during training including eval harness
-                trainer.loop.eval_frequency = None
-            else:
-                if config.fit.val_dataloader is not None:
-                    val_dataloader = list(
-                        map(
-                            create_dataloader_from_config,
-                            config.fit.val_dataloader,
-                        )
-                    )
-
-            # 👉 Train and evaluation❗
-            trainer.fit(train_dataloader, val_dataloader, config.fit.ckpt_path)
-
-        else:
-            raise ValueError(
-                f"Invalid mode \"{mode}\". "
-                f"Expected one of: train, train_and_eval, eval, eval_all."
-            )
-
-    else:
-        print(f"\n[trainer/utils.py run_trainer_with_params] Running trainer in mode: {mode} with params (not instance of BaseConfig) {type(params)}:")
-        pprint.pprint(params)
-        configs: BaseConfig | List[BaseConfig] = validate_trainer_params(params)
-        print(f"\n[trainer/utils.py run_trainer_with_params] configs {type(configs)}:")
-        pprint.pprint(configs)
-        for config in configs:
-            # 👉 Recursively call this function with each config if params is a list of configs❗
-            run_trainer_with_params(mode, config)
+    print(f"\n[trainer/utils.py run_trainer_with_params] Running trainer in mode: {mode} with params (not instance of BaseConfig) {type(params)}:")
+    pprint.pprint(params)
+    configs: BaseConfig | List[BaseConfig] = validate_trainer_params(params)
+    print(f"\n[trainer/utils.py run_trainer_with_params] configs {type(configs)}:")
+    pprint.pprint(configs)
+    for config in configs:
+        # 👉 Recursively call this function with each config if params is a list of configs❗
+        run_trainer_with_parsed_params(mode, config)
 
 
 def create_dataloader_from_config(data_processor_config):
