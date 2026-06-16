@@ -63,7 +63,7 @@ def run_trainer_with_parsed_params(mode: ModeT, config: BaseConfig):
             - "eval_all": Evaluate the model on all available checkpoints and dataloaders.
         config: The configuration for the Trainer.
     """
-    print(f"\n[trainer/utils.py run_trainer_with_params] Running trainer in mode: {mode} with config (instance of BaseConfig) {type(config)}:")
+    print(f"\n[trainer/utils.py run_trainer_with_parsed_params] Running trainer in mode: {mode} with config (instance of BaseConfig) {type(config)}:")
     pprint.pprint(config)
     try:
         # 👉 trainer created ❗
