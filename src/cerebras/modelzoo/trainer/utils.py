@@ -51,7 +51,8 @@ def mode_to_cmd(mode: ModeT):
     else:
         raise ValueError(f"Invalid mode {mode}.")
 
-
+# This code was in run_trainer_with_params before, but was split out into a separate function to
+# allow for recursive calls to run_trainer_with_parsed_params with each config if params is a list
 def run_trainer_with_parsed_params(mode: ModeT, config: BaseConfig):
     """Runs training and/or validation using the Trainer with the given config.
 
@@ -162,9 +163,9 @@ def run_trainer_with_parsed_params(mode: ModeT, config: BaseConfig):
             f"Expected one of: train, train_and_eval, eval, eval_all."
         )
 
-# Split out from run_trainer_with_parsed_params so dict params (incl. legacy
-# params and multi-phase configs that validate to a list) get normalized and
-# validated into BaseConfig instances before delegating per-config execution.
+# Split main logic out to run_trainer_with_parsed_params, this function make sure the
+# dict params (incl. legacy params and multi-phase configs that validate to a list) get normalized
+# and validated into BaseConfig instances before delegating per-config execution.
 def run_trainer_with_params(mode: ModeT, params: Dict[str, Any]):
     """Runs training and/or validation using the Trainer with the given params.
 

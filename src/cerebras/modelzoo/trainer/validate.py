@@ -208,6 +208,24 @@ def construct_trainer_config(model_name: str) -> Type[BaseConfig]:
         ],
         discriminator,
         BeforeValidator(partial(unpack, name="optimizer")),
+        # Q: explain the call to partial at line 210.
+        # CC: partial(unpack, name="optimizer") creates a new callable that is unpack
+        #   with name pre-filled as "optimizer".
+        # Why this is needed:
+        #   BeforeValidator expects a callable with a single argument — the raw input value
+        #   being validated. But unpack has two required parameters: d (the value) and name
+        #   (used in error messages). partial bridges this mismatch by pre-binding
+        #   name="optimizer", producing a single-argument function that BeforeValidator can call.
+        # What unpack does (line 88-102):
+        #   It normalizes the shorthand YAML/dict format for discriminated unions. Users write:
+        #     {"SGD": {"lr": 0.01}}
+        #   unpack converts that to:
+        #     {"type": "SGD", "lr": 0.01}
+        #   by extracting the single key as the discriminator field and merging the inner dict.
+        #   This flattened form is what Pydantic's tagged-union validation (via discriminator) expects.
+        # Full pipeline:
+        #   Pydantic runs BeforeValidator *before* discriminator resolution, so unpack converts
+        #   the user-friendly {ClassName: {...}} format into {type: ClassName, ...} first.
     ]
 
     # pylint: disable=missing-class-docstring,missing-function-docstring
